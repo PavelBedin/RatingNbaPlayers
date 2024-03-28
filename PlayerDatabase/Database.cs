@@ -1,8 +1,8 @@
-﻿using Data_base.Exceptions;
-
-namespace Data_base;
-
+﻿using Data_base;
+using Data_base.Exceptions;
 using Microsoft.Data.Sqlite;
+
+namespace DataBase;
 
 public class Database : IDisposable
 {
@@ -76,24 +76,24 @@ public class Database : IDisposable
     }
 
 
-    public Player? GetPlayerById(int id)
+    public Player GetPlayerById(int id)
     {
         return GetEntryPlayerOrTeam<Player>(table: "Players", id: id);
     }
 
 
-    public Player? GetPlayerByName(string name)
+    public Player GetPlayerByName(string name)
     {
         return GetEntryPlayerOrTeam<Player>(table: "Players", name: name);
     }
 
 
-    public Team? GetTeamById(int id)
+    public Team GetTeamById(int id)
     {
         return GetEntryPlayerOrTeam<Team>(id: id, table: "Teams");
     }
 
-    public Team? GetTeamByName(string name)
+    public Team GetTeamByName(string name)
     {
         return GetEntryPlayerOrTeam<Team>(name: name, table: "Teams");
     }
@@ -149,6 +149,23 @@ public class Database : IDisposable
             Console.WriteLine(e);
             return null;
         }
+    }
+
+    public IEnumerable<PlayerRating> GetAllPlayerRating()
+    {
+        var list = new List<PlayerRating>();
+        using var command = _connection.CreateCommand();
+        command.CommandText = "SELECT Name, Id, Rating FROM Players p JOIN Rating r ON r.Player_Id = p.Id";
+        using var reader = command.ExecuteReader();
+        while (reader.Read())
+        {
+            var name = reader.GetString(0);
+            var id = reader.GetInt32(1);
+            var rating = reader.GetInt32(2);
+            list.Add(new PlayerRating(name, id, rating));
+        }
+
+        return list;
     }
 
     private int TakeLastId(string tableName)
