@@ -15,38 +15,69 @@ public class Database : IDisposable
     }
 
 
-    public void AddPlayer(string namePlayer)
+    public int AddPlayer(string namePlayer)
     {
-        AddPlayerOrTeam(namePlayer, "Players");
+        return AddPlayerOrTeam(namePlayer, "Players");
     }
 
-    public void AddTeam(string nameTeam)
+    public int AddTeam(string nameTeam)
     {
-        AddPlayerOrTeam(nameTeam, "Teams");
+        return AddPlayerOrTeam(nameTeam, "Teams");
     }
 
-    private void AddPlayerOrTeam(string name, string table)
+    private int AddPlayerOrTeam(string name, string table)
     {
         using var insertCommand = _connection.CreateCommand();
         var id = TakeLastId($"{table}") + 1;
         insertCommand.CommandText = $"INSERT INTO {table} (Id, Name) VALUES ({id}, '{name}')";
         insertCommand.ExecuteNonQuery();
+        return id;
     }
 
     public void AddPlayerRating(string namePlayer, int rating, int id = 0)
     {
         if (id == 0)
-            id = TakePlayerId(namePlayer);
+            id = TakePlayerOrTeamId(namePlayer, "Players");
         if (id == 0)
-        {
-            AddPlayer(namePlayer);
-            id = TakeLastId("Players");
-        }
-
+            id = AddPlayer(namePlayer);
         using var command = _connection.CreateCommand();
         command.CommandText = $"INSERT INTO Rating(Player_Id, Rating) VALUES ({id}, {rating})";
         command.ExecuteNonQuery();
     }
+
+    public void AddPlayerInTeam(string namePlayer, string nameTeam)
+    {
+        var playerId = 0;
+        var teamId = 0;
+        if (TakePlayerOrTeamId(namePlayer, "Players") == 0)
+            playerId = AddPlayer(namePlayer);
+        if (TakePlayerOrTeamId(nameTeam, "Teams") == 0)
+            teamId = AddTeam(nameTeam);
+        using var command = _connection.CreateCommand();
+        command.CommandText = $"INSERT INTO Player_In_Team(Player_Id, Team_Id) VALUES ({playerId}, {teamId})";
+        command.ExecuteNonQuery();
+    }
+
+    public IEnumerable<PlayerInTeam> GetAllPlayerInTeams()
+    {
+        var list = new List<PlayerInTeam>();
+        using var command = _connection.CreateCommand();
+        command.CommandText = "SELECT p.Name, t.Name " +
+                              "FROM Player_In_Team pt " +
+                              "JOIN Players p on p.Id = pt.Player_Id " +
+                              "JOIN Teams t on pt.Team_Id = t.Id";
+
+        using var reader = command.ExecuteReader();
+        while (reader.Read())
+        {
+            var namePlayer = reader.GetString(0);
+            var nameTeam = reader.GetString(1);
+            list.Add(new PlayerInTeam(namePlayer, nameTeam));
+        }
+
+        return list;
+    }
+
 
     public IEnumerable<Player?> GetAllPlayers()
     {
@@ -133,7 +164,7 @@ public class Database : IDisposable
         try
         {
             if (id == 0)
-                id = TakePlayerId(name);
+                id = TakePlayerOrTeamId(name, "Players");
             if (id == 0)
                 throw new NotEntryException();
             using var command = _connection.CreateCommand();
@@ -176,13 +207,14 @@ public class Database : IDisposable
         return command.ExecuteScalar() == DBNull.Value ? 0 : Convert.ToInt32(command.ExecuteScalar());
     }
 
-    private int TakePlayerId(string name)
+    private int TakePlayerOrTeamId(string name, string table)
     {
         using var command = _connection.CreateCommand();
-        command.CommandText = "SELECT Id FROM Players WHERE Name = @Name";
+        command.CommandText = $"SELECT Id FROM {table} WHERE Name = @Name";
         command.Parameters.AddWithValue("@Name", name);
         return command.ExecuteScalar() == DBNull.Value ? 0 : Convert.ToInt32(command.ExecuteScalar());
     }
+
 
     public void Dispose()
     {
