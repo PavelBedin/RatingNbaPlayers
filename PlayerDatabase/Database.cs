@@ -36,7 +36,7 @@ public class Database : IDisposable
     public void AddPlayerRating(string namePlayer, int rating, int id = 0)
     {
         if (id == 0)
-            TakePlayerId(namePlayer);
+            id = TakePlayerId(namePlayer);
         if (id == 0)
         {
             AddPlayer(namePlayer);
@@ -116,7 +116,7 @@ public class Database : IDisposable
         try
         {
             if (!reader.Read())
-                throw new NotEntryException("The entry is not in the database");
+                throw new NotEntryException();
             id = reader.GetInt32(0);
             name = reader.GetString(1);
             return (T)Activator.CreateInstance(typeof(T), id, name)!;
@@ -125,6 +125,29 @@ public class Database : IDisposable
         {
             Console.WriteLine(e);
             return default!;
+        }
+    }
+
+    public PlayerRating? GetPlayerRating(string name, int id = 0)
+    {
+        try
+        {
+            if (id == 0)
+                id = TakePlayerId(name);
+            if (id == 0)
+                throw new NotEntryException();
+            using var command = _connection.CreateCommand();
+            command.CommandText = $"SELECT * FROM Rating WHERE Id = {id}";
+            using var reader = command.ExecuteReader();
+            var rating = 0;
+            if (reader.Read())
+                rating = reader.GetInt32(1);
+            return rating == 0 ? null : new PlayerRating(name, id, rating);
+        }
+        catch (NotEntryException e)
+        {
+            Console.WriteLine(e);
+            return null;
         }
     }
 
@@ -139,7 +162,7 @@ public class Database : IDisposable
     private int TakePlayerId(string name)
     {
         using var command = _connection.CreateCommand();
-        command.CommandText = $"SELECT Id FROM Players WHERE Name = @Name";
+        command.CommandText = "SELECT Id FROM Players WHERE Name = @Name";
         command.Parameters.AddWithValue("@Name", name);
         return command.ExecuteScalar() == DBNull.Value ? 0 : Convert.ToInt32(command.ExecuteScalar());
     }
