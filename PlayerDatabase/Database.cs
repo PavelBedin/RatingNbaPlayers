@@ -58,27 +58,6 @@ public class Database : IDisposable
         command.ExecuteNonQuery();
     }
 
-    public IEnumerable<PlayerInTeam> GetAllPlayerInTeams()
-    {
-        var list = new List<PlayerInTeam>();
-        using var command = _connection.CreateCommand();
-        command.CommandText = "SELECT p.Name, t.Name " +
-                              "FROM Player_In_Team pt " +
-                              "JOIN Players p on p.Id = pt.Player_Id " +
-                              "JOIN Teams t on pt.Team_Id = t.Id";
-
-        using var reader = command.ExecuteReader();
-        while (reader.Read())
-        {
-            var namePlayer = reader.GetString(0);
-            var nameTeam = reader.GetString(1);
-            list.Add(new PlayerInTeam(namePlayer, nameTeam));
-        }
-
-        return list;
-    }
-
-
     public IEnumerable<Player?> GetAllPlayers()
     {
         return GetAllFromPlayersOrTeams<Player>("Players");
@@ -197,6 +176,70 @@ public class Database : IDisposable
         }
 
         return list;
+    }
+
+    public IEnumerable<PlayerInTeam> GetAllPlayerInTeams()
+    {
+        var list = new List<PlayerInTeam>();
+        using var command = _connection.CreateCommand();
+        command.CommandText = "SELECT p.Name, t.Name FROM Player_In_Team pt " +
+                              "JOIN Players p on p.Id = pt.Player_Id JOIN Teams t on pt.Team_Id = t.Id";
+
+        using var reader = command.ExecuteReader();
+        while (reader.Read())
+        {
+            var namePlayer = reader.GetString(0);
+            var nameTeam = reader.GetString(1);
+            list.Add(new PlayerInTeam(namePlayer, nameTeam));
+        }
+
+        return list;
+    }
+
+    public PlayerInTeam? GetTeamByPlayer(string namePlayer)
+    {
+        try
+        {
+            var id = GetPlayerByName(namePlayer).Id;
+            using var command = _connection.CreateCommand();
+            command.CommandText = $"SELECT t.Name FROM Player_In_Team pt JOIN Players p on p.Id = pt.Player_Id" +
+                                  $" JOIN Teams t on pt.Team_Id = t.Id WHERE p.Id = {id}";
+            using var reader = command.ExecuteReader();
+            if (!reader.Read())
+                throw new NotEntryException();
+            var nameTeam = reader.GetString(0);
+            return new PlayerInTeam(namePlayer, nameTeam);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return null;
+        }
+    }
+
+    public IEnumerable<PlayerInTeam>? GetAllPlayerSameTeam(string nameTeam)
+    {
+        var list = new List<PlayerInTeam>();
+        try
+        {
+            var id = GetTeamByName(nameTeam).Id;
+            using var command = _connection.CreateCommand();
+            command.CommandText = $"SELECT p.Name FROM Player_In_Team pt JOIN Players p on p.Id = pt.Player_Id " +
+                                  $"JOIN Teams t on pt.Team_Id = t.Id WHERE t.Id = {id}";
+            using var reader = command.ExecuteReader();
+            while (reader.Read())
+            {
+                var namePlayer = reader.GetString(0);
+                list.Add(new PlayerInTeam(namePlayer, nameTeam));
+            }
+
+            return list;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return null;
+        }
     }
 
     private int TakeLastId(string tableName)
