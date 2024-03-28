@@ -1,4 +1,5 @@
-﻿using Data_base;
+﻿using System.Text;
+using Data_base;
 using Data_base.Exceptions;
 using Microsoft.Data.Sqlite;
 
@@ -56,6 +57,48 @@ public class Database : IDisposable
         using var command = _connection.CreateCommand();
         command.CommandText = $"INSERT INTO Player_In_Team(Player_Id, Team_Id) VALUES ({playerId}, {teamId})";
         command.ExecuteNonQuery();
+    }
+
+    public void AddTraditionalStatistics(TraditionalStatistics ts)
+    {
+        try
+        {
+            using var command = _connection.CreateCommand();
+            var queryBuilder = new StringBuilder();
+            queryBuilder.Append("INSERT INTO Traditional_Statistics (Player_Id, Game_Played, Minutes_Played, ");
+            queryBuilder.Append("PPG, FGM, FGA, FGP, TPM, TPA, TPP, FTM, FTA, FTP, OREB, DRED, REB, AST, TOV, ");
+            queryBuilder.Append("STL, BLK, PF, DD2, TD3, PM) VALUES (");
+            queryBuilder.Append($"{ts.PlayerId}, ");
+            queryBuilder.Append($"{ts.GamesPlayed}, ");
+            queryBuilder.Append($"{ts.MinutesPlayed}, ");
+            queryBuilder.Append($"{ts.PointsPerGame}, ");
+            queryBuilder.Append($"{ts.FieldGoalsMade}, ");
+            queryBuilder.Append($"{ts.FieldGoalsAttempted}, ");
+            queryBuilder.Append($"{ts.FieldGoalsPercentage}, ");
+            queryBuilder.Append($"{ts.ThreePointFieldGoalsMade}, ");
+            queryBuilder.Append($"{ts.ThreePointFieldGoalsAttempted}, ");
+            queryBuilder.Append($"{ts.ThreePointFieldGoalsPercentage}, ");
+            queryBuilder.Append($"{ts.FreeThrowsMade}, ");
+            queryBuilder.Append($"{ts.FreeThrowsAttempted}, ");
+            queryBuilder.Append($"{ts.FreeThrowsPercentage}, ");
+            queryBuilder.Append($"{ts.OffensiveRebounds}, ");
+            queryBuilder.Append($"{ts.DefensiveRebounds}, ");
+            queryBuilder.Append($"{ts.TotalRebounds}, ");
+            queryBuilder.Append($"{ts.Assists}, ");
+            queryBuilder.Append($"{ts.Turnovers}, ");
+            queryBuilder.Append($"{ts.Steals}, ");
+            queryBuilder.Append($"{ts.Blocks}, ");
+            queryBuilder.Append($"{ts.PersonalFouls}, ");
+            queryBuilder.Append($"{ts.DoubleDoubles}, ");
+            queryBuilder.Append($"{ts.TripleDoubles}, ");
+            queryBuilder.Append($"{ts.PlusMinus})");
+            command.CommandText = queryBuilder.ToString();
+            command.ExecuteScalar();
+        }
+        catch (SqliteException e)
+        {
+            Console.WriteLine(e);
+        }
     }
 
     public IEnumerable<Player?> GetAllPlayers()
