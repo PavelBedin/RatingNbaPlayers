@@ -33,6 +33,21 @@ public class DataBase : IDisposable
         insertCommand.ExecuteNonQuery();
     }
 
+    public void AddPlayerRating(string namePlayer, int rating, int id = 0)
+    {
+        if (id == 0)
+            TakePlayerId(namePlayer);
+        if (id == 0)
+        {
+            AddPlayer(namePlayer);
+            id = TakeLastId("Players");
+        }
+
+        using var command = _connection.CreateCommand();
+        command.CommandText = $"INSERT INTO Rating(Player_Id, Rating) VALUES ({id}, {rating})";
+        command.ExecuteNonQuery();
+    }
+
     public IEnumerable<Player?> GetAllPlayers()
     {
         return GetAllFromPlayersOrTeams<Player>("Players");
@@ -118,8 +133,15 @@ public class DataBase : IDisposable
         using var command = _connection.CreateCommand();
         command.CommandText = $"SELECT MAX(Id) FROM {tableName}";
 
-        var maxId = command.ExecuteScalar() == DBNull.Value ? 0 : Convert.ToInt32(command.ExecuteScalar());
-        return maxId;
+        return command.ExecuteScalar() == DBNull.Value ? 0 : Convert.ToInt32(command.ExecuteScalar());
+    }
+
+    private int TakePlayerId(string name)
+    {
+        using var command = _connection.CreateCommand();
+        command.CommandText = $"SELECT Id FROM Players WHERE Name = @Name";
+        command.Parameters.AddWithValue("@Name", name);
+        return command.ExecuteScalar() == DBNull.Value ? 0 : Convert.ToInt32(command.ExecuteScalar());
     }
 
     public void Dispose()
