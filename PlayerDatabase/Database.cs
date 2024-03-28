@@ -137,7 +137,7 @@ public class Database : IDisposable
             if (id == 0)
                 throw new NotEntryException();
             using var command = _connection.CreateCommand();
-            command.CommandText = $"SELECT * FROM Rating WHERE Id = {id}";
+            command.CommandText = $"SELECT * FROM Rating WHERE Player_Id = {id}";
             using var reader = command.ExecuteReader();
             var rating = 0;
             if (reader.Read())
