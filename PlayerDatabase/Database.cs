@@ -4,11 +4,11 @@ namespace Data_base;
 
 using Microsoft.Data.Sqlite;
 
-public class DataBase : IDisposable
+public class Database : IDisposable
 {
     private readonly SqliteConnection _connection;
 
-    public DataBase(string dataBaseName = "NBA.db")
+    public Database(string dataBaseName = "NBA.db")
     {
         _connection = new SqliteConnection($"Data Source={dataBaseName}");
         _connection.Open();
