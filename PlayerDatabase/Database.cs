@@ -42,7 +42,7 @@ public class Database : IDisposable
         if (id == 0)
             id = AddPlayer(namePlayer);
         using var command = _connection.CreateCommand();
-        command.CommandText = $"INSERT INTO Rating(Player_Id, Rating) VALUES ({id}, {rating})";
+        command.CommandText = $"INSERT INTO Rating(PlayerId, Rating) VALUES ({id}, {rating})";
         command.ExecuteNonQuery();
     }
 
@@ -55,7 +55,7 @@ public class Database : IDisposable
         if (TakePlayerOrTeamId(nameTeam, "Teams") == 0)
             teamId = AddTeam(nameTeam);
         using var command = _connection.CreateCommand();
-        command.CommandText = $"INSERT INTO Player_In_Team(Player_Id, Team_Id) VALUES ({playerId}, {teamId})";
+        command.CommandText = $"INSERT INTO Player_In_Team(PlayerId, TeamId) VALUES ({playerId}, {teamId})";
         command.ExecuteNonQuery();
     }
 
@@ -65,33 +65,33 @@ public class Database : IDisposable
         {
             using var command = _connection.CreateCommand();
             var queryBuilder = new StringBuilder();
-            queryBuilder.Append("INSERT INTO Traditional_Statistics (Player_Id, Game_Played, Minutes_Played, ");
+            queryBuilder.Append("INSERT INTO Traditional_Statistics (PlayerId, GamePlayed, MinutesPlayed, ");
             queryBuilder.Append("PPG, FGM, FGA, FGP, TPM, TPA, TPP, FTM, FTA, FTP, OREB, DRED, REB, AST, TOV, ");
             queryBuilder.Append("STL, BLK, PF, DD2, TD3, PM) VALUES (");
             queryBuilder.Append($"{ts.PlayerId}, ");
-            queryBuilder.Append($"{ts.GamesPlayed}, ");
+            queryBuilder.Append($"{ts.GamePlayed}, ");
             queryBuilder.Append($"{ts.MinutesPlayed}, ");
-            queryBuilder.Append($"{ts.PointsPerGame}, ");
-            queryBuilder.Append($"{ts.FieldGoalsMade}, ");
-            queryBuilder.Append($"{ts.FieldGoalsAttempted}, ");
-            queryBuilder.Append($"{ts.FieldGoalsPercentage}, ");
-            queryBuilder.Append($"{ts.ThreePointFieldGoalsMade}, ");
-            queryBuilder.Append($"{ts.ThreePointFieldGoalsAttempted}, ");
-            queryBuilder.Append($"{ts.ThreePointFieldGoalsPercentage}, ");
-            queryBuilder.Append($"{ts.FreeThrowsMade}, ");
-            queryBuilder.Append($"{ts.FreeThrowsAttempted}, ");
-            queryBuilder.Append($"{ts.FreeThrowsPercentage}, ");
-            queryBuilder.Append($"{ts.OffensiveRebounds}, ");
-            queryBuilder.Append($"{ts.DefensiveRebounds}, ");
-            queryBuilder.Append($"{ts.TotalRebounds}, ");
-            queryBuilder.Append($"{ts.Assists}, ");
-            queryBuilder.Append($"{ts.Turnovers}, ");
-            queryBuilder.Append($"{ts.Steals}, ");
-            queryBuilder.Append($"{ts.Blocks}, ");
-            queryBuilder.Append($"{ts.PersonalFouls}, ");
-            queryBuilder.Append($"{ts.DoubleDoubles}, ");
-            queryBuilder.Append($"{ts.TripleDoubles}, ");
-            queryBuilder.Append($"{ts.PlusMinus})");
+            queryBuilder.Append($"{ts.PPG}, ");
+            queryBuilder.Append($"{ts.FGM}, ");
+            queryBuilder.Append($"{ts.FGA}, ");
+            queryBuilder.Append($"{ts.FGP}, ");
+            queryBuilder.Append($"{ts.TPM}, ");
+            queryBuilder.Append($"{ts.TPA}, ");
+            queryBuilder.Append($"{ts.TPP}, ");
+            queryBuilder.Append($"{ts.FTM}, ");
+            queryBuilder.Append($"{ts.FTA}, ");
+            queryBuilder.Append($"{ts.FTP}, ");
+            queryBuilder.Append($"{ts.OREB}, ");
+            queryBuilder.Append($"{ts.DRED}, ");
+            queryBuilder.Append($"{ts.REB}, ");
+            queryBuilder.Append($"{ts.AST}, ");
+            queryBuilder.Append($"{ts.TOV}, ");
+            queryBuilder.Append($"{ts.STL}, ");
+            queryBuilder.Append($"{ts.BLK}, ");
+            queryBuilder.Append($"{ts.PF}, ");
+            queryBuilder.Append($"{ts.DD2}, ");
+            queryBuilder.Append($"{ts.TD3}, ");
+            queryBuilder.Append($"{ts.PM})");
             command.CommandText = queryBuilder.ToString();
             command.ExecuteScalar();
         }
@@ -103,29 +103,12 @@ public class Database : IDisposable
 
     public IEnumerable<Player?> GetAllPlayers()
     {
-        return GetAllFromPlayersOrTeams<Player>("Players");
+        return GetAll<Player>("Players");
     }
 
     public IEnumerable<Team?> GetAllTeams()
     {
-        return GetAllFromPlayersOrTeams<Team>("Teams");
-    }
-
-    private IEnumerable<T?> GetAllFromPlayersOrTeams<T>(string table)
-    {
-        var list = new List<T?>();
-        using var command = _connection.CreateCommand();
-        command.CommandText = $"SELECT * FROM {table}";
-
-        using var reader = command.ExecuteReader();
-        while (reader.Read())
-        {
-            var id = reader.GetInt32(0);
-            var name = reader.GetString(1);
-            list.Add((T)Activator.CreateInstance(typeof(T), id, name)!);
-        }
-
-        return list;
+        return GetAll<Team>("Teams");
     }
 
 
@@ -190,7 +173,7 @@ public class Database : IDisposable
             if (id == 0)
                 throw new NotEntryException();
             using var command = _connection.CreateCommand();
-            command.CommandText = $"SELECT * FROM Rating WHERE Player_Id = {id}";
+            command.CommandText = $"SELECT * FROM Rating WHERE PlayerId = {id}";
             using var reader = command.ExecuteReader();
             var rating = 0;
             if (reader.Read())
@@ -208,7 +191,7 @@ public class Database : IDisposable
     {
         var list = new List<PlayerRating>();
         using var command = _connection.CreateCommand();
-        command.CommandText = "SELECT Name, Id, Rating FROM Players p JOIN Rating r ON r.Player_Id = p.Id";
+        command.CommandText = "SELECT Name, Id, Rating FROM Players p JOIN Rating r ON r.PlayerId = p.Id";
         using var reader = command.ExecuteReader();
         while (reader.Read())
         {
@@ -226,7 +209,7 @@ public class Database : IDisposable
         var list = new List<PlayerInTeam>();
         using var command = _connection.CreateCommand();
         command.CommandText = "SELECT p.Name, t.Name FROM Player_In_Team pt " +
-                              "JOIN Players p on p.Id = pt.Player_Id JOIN Teams t on pt.Team_Id = t.Id";
+                              "JOIN Players p on p.Id = pt.PlayerId JOIN Teams t on pt.TeamId = t.Id";
 
         using var reader = command.ExecuteReader();
         while (reader.Read())
@@ -245,8 +228,8 @@ public class Database : IDisposable
         {
             var id = GetPlayerByName(namePlayer).Id;
             using var command = _connection.CreateCommand();
-            command.CommandText = $"SELECT t.Name FROM Player_In_Team pt JOIN Players p on p.Id = pt.Player_Id" +
-                                  $" JOIN Teams t on pt.Team_Id = t.Id WHERE p.Id = {id}";
+            command.CommandText = $"SELECT t.Name FROM Player_In_Team pt JOIN Players p on p.Id = pt.PlayerId" +
+                                  $" JOIN Teams t on pt.TeamId = t.Id WHERE p.Id = {id}";
             using var reader = command.ExecuteReader();
             if (!reader.Read())
                 throw new NotEntryException();
@@ -267,8 +250,8 @@ public class Database : IDisposable
         {
             var id = GetTeamByName(nameTeam).Id;
             using var command = _connection.CreateCommand();
-            command.CommandText = $"SELECT p.Name FROM Player_In_Team pt JOIN Players p on p.Id = pt.Player_Id " +
-                                  $"JOIN Teams t on pt.Team_Id = t.Id WHERE t.Id = {id}";
+            command.CommandText = $"SELECT p.Name FROM Player_In_Team pt JOIN Players p on p.Id = pt.PlayerId " +
+                                  $"JOIN Teams t on pt.TeamId = t.Id WHERE t.Id = {id}";
             using var reader = command.ExecuteReader();
             while (reader.Read())
             {
@@ -285,45 +268,56 @@ public class Database : IDisposable
         }
     }
 
-    public IEnumerable<TraditionalStatistics> GetAllTraditionalStatistics()
+    public IEnumerable<T?> GetAll<T>(string table)
     {
-        var list = new List<TraditionalStatistics>();
+        var list = new List<T?>();
         using var command = _connection.CreateCommand();
-        command.CommandText = "SELECT * FROM Traditional_Statistics";
+        command.CommandText = $"SELECT * FROM {table}";
         using var reader = command.ExecuteReader();
+        var properties = typeof(T).GetProperties();
+        var fieldCount = reader.FieldCount;
         while (reader.Read())
         {
-            var values = new object[24];
-            reader.GetValues(values);
-            var id = reader.GetInt32(0);
-            list.Add(new TraditionalStatistics(id, values));
+            var instance = Activator.CreateInstance<T>();
+            for (var i = 0; i < fieldCount; i++)
+            {
+                var fieldName = reader.GetName(i);
+                var property =
+                    properties.FirstOrDefault(p => p.Name.Equals(fieldName, StringComparison.OrdinalIgnoreCase));
+                if (property == null || reader.IsDBNull(i)) continue;
+                var value = reader.GetValue(i);
+                if (value != DBNull.Value)
+                    property.SetValue(instance, Convert.ChangeType(value, property.PropertyType));
+            }
+
+            list.Add(instance);
         }
 
         return list;
     }
 
-    public TraditionalStatistics? GetTraditionalStatistics(string name)
-    {
-        try
-        {
-            var id = TakePlayerOrTeamId(name, "Players");
-            if (id == 0)
-                throw new NotEntryException();
-            using var command = _connection.CreateCommand();
-            command.CommandText = $"SELECT * FROM Traditional_Statistics WHERE Player_Id = {id}";
-            using var reader = command.ExecuteReader();
-            if (!reader.Read())
-                throw new NotEntryException();
-            var values = new object[24];
-            reader.GetValues(values);
-            return new TraditionalStatistics(id, values);
-        }
-        catch (NotEntryException e)
-        {
-            Console.WriteLine(e);
-            return null;
-        }
-    }
+    // public TraditionalStatistics? GetTraditionalStatistics(string name)
+    // {
+    //     try
+    //     {
+    //         var id = TakePlayerOrTeamId(name, "Players");
+    //         if (id == 0)
+    //             throw new NotEntryException();
+    //         using var command = _connection.CreateCommand();
+    //         command.CommandText = $"SELECT * FROM Traditional_Statistics WHERE Player_Id = {id}";
+    //         using var reader = command.ExecuteReader();
+    //         if (!reader.Read())
+    //             throw new NotEntryException();
+    //         var values = new object[24];
+    //         reader.GetValues(values);
+    //         return new TraditionalStatistics(values);
+    //     }
+    //     catch (NotEntryException e)
+    //     {
+    //         Console.WriteLine(e);
+    //         return null;
+    //     }
+    // }
 
     private int TakeLastId(string tableName)
     {
