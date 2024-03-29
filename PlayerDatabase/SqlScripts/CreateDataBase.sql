@@ -8,9 +8,9 @@ CREATE TABLE IF NOT EXISTS Players
 --Creating a table Rating
 CREATE TABLE IF NOT EXISTS Rating
 (
-    Player_Id INTEGER,
+    PlayerId INTEGER,
     Rating    INTEGER,
-    FOREIGN KEY (Player_Id
+    FOREIGN KEY (PlayerId
         ) REFERENCES Players (Id)
 
 );
@@ -26,18 +26,18 @@ CREATE TABLE IF NOT EXISTS Teams
 --Creating a table Player_In_Team
 CREATE TABLE IF NOT EXISTS Player_In_Team
 (
-    Player_Id INTEGER,
-    Team_Id   INTEGER,
-    FOREIGN KEY (Player_Id) REFERENCES Players (Id),
-    FOREIGN KEY (Team_Id) REFERENCES Teams (Id)
+    PlayerId INTEGER,
+    TeamId   INTEGER,
+    FOREIGN KEY (PlayerId) REFERENCES Players (Id),
+    FOREIGN KEY (TeamId) REFERENCES Teams (Id)
 );
 
 --Creating a table Traditional_Statistics
 CREATE TABLE IF NOT EXISTS Traditional_Statistics
 (
-    Player_Id      INTEGER,
-    Game_Played    INTEGER,
-    Minutes_Played REAL,
+    PlayerId      INTEGER,
+    GamePlayed    INTEGER,
+    MinutesPlayed REAL,
     PPG            REAL,    --Points Per Game
     FGM            REAL,    --Field Goals Made
     FGA            REAL,    --Field Goals Attempted
@@ -59,13 +59,13 @@ CREATE TABLE IF NOT EXISTS Traditional_Statistics
     DD2            INTEGER, --Double Doubles
     TD3            INTEGER, --Triple Doubles
     PM             REAL,    --Plus-Minus
-    FOREIGN KEY (Player_Id) REFERENCES Players (Id)
+    FOREIGN KEY (PlayerId) REFERENCES Players (Id)
 );
 
 --Creating a table Advanced_Statistics
 CREATE TABLE IF NOT EXISTS Advanced_Statistics
 (
-    Player_Id INTEGER,
+    PlayerId INTEGER,
     OFFRTG    REAL, --Offensive Rating
     DEFRTG    REAL, --Defensive Rating
     NETRTG    REAL, --NET Rating
@@ -81,5 +81,5 @@ CREATE TABLE IF NOT EXISTS Advanced_Statistics
     USGP      REAL, --Usage Percentage
     PACE      REAL,
     PIE       REAL, --Player Impact Estimate
-    FOREIGN KEY (Player_Id) REFERENCES Players (Id)
+    FOREIGN KEY (PlayerId) REFERENCES Players (Id)
 );

@@ -34,7 +34,7 @@ CREATE TRIGGER IF NOT EXISTS update_existing_player_rating
 BEGIN
     UPDATE Rating
     SET Rating = NEW.Rating
-    WHERE Player_Id = NEW.Player_Id;
+    WHERE PlayerId = NEW.PlayerId;
 
     SELECT CASE
                WHEN changes() > 0 THEN
@@ -51,8 +51,8 @@ CREATE TRIGGER IF NOT EXISTS update_existing_player_in_team
     FOR EACH ROW
 BEGIN
     UPDATE Player_In_Team
-    SET Team_Id = NEW.Team_Id
-    WHERE Player_Id = NEW.Player_Id;
+    SET TeamId = NEW.TeamId
+    WHERE PlayerId = NEW.PlayerId;
 
     SELECT CASE
                WHEN changes() > 0 THEN
@@ -69,8 +69,8 @@ CREATE TRIGGER IF NOT EXISTS update_existing_player_in_traditional_statistics
     FOR EACH ROW
 BEGIN
     UPDATE Traditional_Statistics
-    SET Game_Played    = NEW.Game_Played,
-        Minutes_Played = NEW.Minutes_Played,
+    SET GamePlayed    = NEW.GamePlayed,
+        MinutesPlayed = NEW.MinutesPlayed,
         PPG            = NEW.PPG,
         FGM            = NEW.FGM,
         FGA            = NEW.FGA,
@@ -92,7 +92,7 @@ BEGIN
         DD2            = NEW.DD2,
         TD3            = NEW.TD3,
         PM             = NEW.PM
-    WHERE Player_Id = NEW.Player_Id;
+    WHERE PlayerId = NEW.PlayerId;
 
     SELECT CASE
                WHEN changes() > 0 THEN
@@ -123,7 +123,7 @@ BEGIN
         USGP   = NEW.USGP,
         PACE   = NEW.PACE,
         PIE    = NEW.PIE
-    WHERE Player_Id = NEW.Player_Id;
+    WHERE PlayerId = NEW.PlayerId;
 
     SELECT CASE
                WHEN changes() > 0 THEN
