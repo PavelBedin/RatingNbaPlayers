@@ -118,6 +118,11 @@ public class Database : IDisposable
         }
     }
 
+    public IEnumerable<AdvancedStatistics?> GetAllAdvancedStatistics()
+    {
+        return GetAll<AdvancedStatistics>(DefaultSelect("Advanced_Statistics"));
+    }
+
 
     public Player? GetPlayerById(int id)
     {
