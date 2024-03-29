@@ -151,49 +151,35 @@ public class Database : IDisposable
     }
 
 
-    public Player GetPlayerByName(string name)
+    public Player? GetPlayerByName(string name)
     {
-        return GetEntryPlayerOrTeam<Player>(table: "Players", name: name);
+        return TryToGetEntry<Player>($"SELECT * FROM Players WHERE Name = '{name}'");
     }
 
 
-    public Team GetTeamById(int id)
+    public Team? GetTeamById(int id)
     {
-        return GetEntryPlayerOrTeam<Team>(id: id, table: "Teams");
+        return TryToGetEntry<Team?>($"SELECT * FROM Teams WHERE Id = {id}");
     }
 
-    public Team GetTeamByName(string name)
+    public Team? GetTeamByName(string name)
     {
-        return GetEntryPlayerOrTeam<Team>(name: name, table: "Teams");
+        return TryToGetEntry<Team?>($"SELECT * FROM Teams WHERE Name = '{name}'");
     }
 
-    private T GetEntryPlayerOrTeam<T>(string table, int id = 0, string name = "")
+    public PlayerInTeam? GetTeamByPlayer(string namePlayer)
     {
-        using var command = _connection.CreateCommand();
-        if (id != 0)
-        {
-            command.CommandText = $"SELECT * FROM {table} WHERE Id = @Id";
-            command.Parameters.AddWithValue("@Id", id);
-        }
-        else
-        {
-            command.CommandText = $"SELECT * FROM {table} WHERE Name = @Name";
-            command.Parameters.AddWithValue("@Name", name);
-        }
-
-        using var reader = command.ExecuteReader();
         try
         {
-            if (!reader.Read())
-                throw new NotEntryException();
-            id = reader.GetInt32(0);
-            name = reader.GetString(1);
-            return (T)Activator.CreateInstance(typeof(T), id, name)!;
+            var id = GetPlayerByName(namePlayer).Id;
+            return TryToGetEntry<PlayerInTeam>(
+                $"SELECT p.Name AS NamePlayer, t.Name AS NameTeam FROM Player_In_Team pt JOIN Players p on p.Id = pt.PlayerId" +
+                $" JOIN Teams t on pt.TeamId = t.Id WHERE p.Id = {id}");
         }
-        catch (NotEntryException e)
+        catch (Exception e)
         {
             Console.WriteLine(e);
-            return default!;
+            return null;
         }
     }
 
@@ -202,16 +188,9 @@ public class Database : IDisposable
         try
         {
             if (id == 0)
-                id = TakePlayerOrTeamId(name, "Players");
-            if (id == 0)
-                throw new NotEntryException();
-            using var command = _connection.CreateCommand();
-            command.CommandText = $"SELECT * FROM Rating WHERE PlayerId = {id}";
-            using var reader = command.ExecuteReader();
-            var rating = 0;
-            if (reader.Read())
-                rating = reader.GetInt32(1);
-            return rating == 0 ? null : new PlayerRating(name, id, rating);
+                id = GetPlayerByName(name).Id;
+            return TryToGetEntry<PlayerRating>(
+                $"SELECT Name, Id, Rating FROM Rating r JOIN Players p on p.Id = r.PlayerId WHERE PlayerId = {id}");
         }
         catch (NotEntryException e)
         {
@@ -220,22 +199,16 @@ public class Database : IDisposable
         }
     }
 
-
-    public PlayerInTeam? GetTeamByPlayer(string namePlayer)
+    public TraditionalStatistics? GetTraditionalStatistics(string name, int id = 0)
     {
         try
         {
-            var id = GetPlayerByName(namePlayer).Id;
-            using var command = _connection.CreateCommand();
-            command.CommandText = $"SELECT t.Name FROM Player_In_Team pt JOIN Players p on p.Id = pt.PlayerId" +
-                                  $" JOIN Teams t on pt.TeamId = t.Id WHERE p.Id = {id}";
-            using var reader = command.ExecuteReader();
-            if (!reader.Read())
-                throw new NotEntryException();
-            var nameTeam = reader.GetString(0);
-            return new PlayerInTeam(namePlayer, nameTeam);
+            if (id == 0)
+                id = GetPlayerByName(name).Id;
+            return TryToGetEntry<TraditionalStatistics>(
+                $"SELECT * FROM Traditional_Statistics WHERE PlayerId = {id}");
         }
-        catch (Exception e)
+        catch (NotEntryException e)
         {
             Console.WriteLine(e);
             return null;
@@ -288,35 +261,13 @@ public class Database : IDisposable
             var fieldCount = reader.FieldCount;
             return GetEntry<T>(reader, properties, fieldCount);
         }
-        catch(NotEntryException e)
+        catch (NotEntryException e)
         {
             Console.WriteLine(e);
             return default!;
         }
     }
 
-    // public TraditionalStatistics? GetTraditionalStatistics(string name)
-    // {
-    //     try
-    //     {
-    //         var id = TakePlayerOrTeamId(name, "Players");
-    //         if (id == 0)
-    //             throw new NotEntryException();
-    //         using var command = _connection.CreateCommand();
-    //         command.CommandText = $"SELECT * FROM Traditional_Statistics WHERE Player_Id = {id}";
-    //         using var reader = command.ExecuteReader();
-    //         if (!reader.Read())
-    //             throw new NotEntryException();
-    //         var values = new object[24];
-    //         reader.GetValues(values);
-    //         return new TraditionalStatistics(values);
-    //     }
-    //     catch (NotEntryException e)
-    //     {
-    //         Console.WriteLine(e);
-    //         return null;
-    //     }
-    // }
 
     private int TakeLastId(string tableName)
     {
