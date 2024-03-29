@@ -76,6 +76,26 @@ public class Database : IDisposable
         }
     }
 
+    public void AddAdvancedStatistics(AdvancedStatistics ads)
+    {
+        try
+        {
+            if (ads.PlayerId == 0)
+                throw new NotEntryException();
+            if (GetPlayerById(ads.PlayerId) == null)
+                throw new NotEntryException();
+            var queryBuilder = new StringBuilder();
+            queryBuilder.Append($"{ads.PlayerId}, {ads.OFFRTG}, {ads.DEFRTG}, {ads.NETRTG}, {ads.ASTP}, {ads.ASTTO}, ");
+            queryBuilder.Append($"{ads.ASTR}, {ads.OREBP}, {ads.DREBP}, {ads.REBP}, {ads.TOR}, {ads.EFGP}, ");
+            queryBuilder.Append($"{ads.TSP}, {ads.USGP}, {ads.PACE}, {ads.PIE}");
+            AddEntry("Advanced_Statistics", queryBuilder.ToString());
+        }
+        catch (NotEntryException e)
+        {
+            Console.WriteLine(e);
+        }
+    }
+
     public IEnumerable<Player?> GetAllPlayers()
     {
         return GetAll<Player>(DefaultSelect("Players"));
@@ -193,7 +213,7 @@ public class Database : IDisposable
             return null;
         }
     }
-    
+
     public AdvancedStatistics? GetAdvancedStatistics(string name, int id = 0)
     {
         try
