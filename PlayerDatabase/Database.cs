@@ -193,6 +193,22 @@ public class Database : IDisposable
             return null;
         }
     }
+    
+    public AdvancedStatistics? GetAdvancedStatistics(string name, int id = 0)
+    {
+        try
+        {
+            if (id == 0)
+                id = GetPlayerByName(name).Id;
+            return TryToGetEntry<AdvancedStatistics>(
+                $"SELECT * FROM Advanced_Statistics WHERE PlayerId = {id}");
+        }
+        catch (NotEntryException e)
+        {
+            Console.WriteLine(e);
+            return null;
+        }
+    }
 
     private IEnumerable<T?> GetAll<T>(string select)
     {
