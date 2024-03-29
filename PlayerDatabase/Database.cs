@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Reflection;
+using System.Text;
 using Data_base;
 using Data_base.Exceptions;
 using Microsoft.Data.Sqlite;
@@ -118,7 +119,7 @@ public class Database : IDisposable
 
     public IEnumerable<PlayerInTeam?> GetAllPlayerInTeams()
     {
-        return GetAll<PlayerInTeam>("SELECT p.Name AS PlayerId, t.Name FROM Player_In_Team pt " +
+        return GetAll<PlayerInTeam>("SELECT p.Name AS NamePlayer, t.Name AS NameTeam FROM Player_In_Team pt " +
                                     "JOIN Players p on p.Id = pt.PlayerId JOIN Teams t on pt.TeamId = t.Id");
     }
 
@@ -127,10 +128,26 @@ public class Database : IDisposable
         return GetAll<PlayerRating>("SELECT Name, Id, Rating FROM Players p JOIN Rating r ON r.PlayerId = p.Id");
     }
 
-
-    public Player GetPlayerById(int id)
+    public IEnumerable<PlayerInTeam>? GetAllPlayerSameTeam(string nameTeam)
     {
-        return GetEntryPlayerOrTeam<Player>(table: "Players", id: id);
+        try
+        {
+            var id = GetTeamByName(nameTeam).Id;
+            return GetAll<PlayerInTeam>(
+                $"SELECT p.Name AS NamePlayer, t.Name AS NameTeam FROM Player_In_Team pt" +
+                $" JOIN Players p on p.Id = pt.PlayerId JOIN Teams t on pt.TeamId = t.Id WHERE t.Id = {id}")!;
+        }
+        catch (NotEntryException e)
+        {
+            Console.WriteLine(e);
+            return null;
+        }
+    }
+
+
+    public Player? GetPlayerById(int id)
+    {
+        return TryToGetEntry<Player>($"SELECT * FROM Players WHERE Id = {id}");
     }
 
 
@@ -225,31 +242,6 @@ public class Database : IDisposable
         }
     }
 
-    public IEnumerable<PlayerInTeam>? GetAllPlayerSameTeam(string nameTeam)
-    {
-        var list = new List<PlayerInTeam>();
-        try
-        {
-            var id = GetTeamByName(nameTeam).Id;
-            using var command = _connection.CreateCommand();
-            command.CommandText = $"SELECT p.Name FROM Player_In_Team pt JOIN Players p on p.Id = pt.PlayerId " +
-                                  $"JOIN Teams t on pt.TeamId = t.Id WHERE t.Id = {id}";
-            using var reader = command.ExecuteReader();
-            while (reader.Read())
-            {
-                var namePlayer = reader.GetString(0);
-                list.Add(new PlayerInTeam(namePlayer, nameTeam));
-            }
-
-            return list;
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-            return null;
-        }
-    }
-
     private IEnumerable<T?> GetAll<T>(string select)
     {
         var list = new List<T?>();
@@ -260,27 +252,47 @@ public class Database : IDisposable
         var fieldCount = reader.FieldCount;
         while (reader.Read())
         {
-            var instance = Activator.CreateInstance<T>();
-            for (var i = 0; i < fieldCount; i++)
-            {
-                var fieldName = reader.GetName(i);
-                var property =
-                    properties.FirstOrDefault(p => p.Name.Equals(fieldName, StringComparison.OrdinalIgnoreCase));
-                if (property == null || reader.IsDBNull(i)) continue;
-                var value = reader.GetValue(i);
-                if (value != DBNull.Value)
-                    property.SetValue(instance, Convert.ChangeType(value, property.PropertyType));
-            }
-
-            list.Add(instance);
+            list.Add(GetEntry<T>(reader, properties, fieldCount));
         }
 
         return list;
     }
 
-    private T? GetEntry<T>()
+    private T GetEntry<T>(SqliteDataReader reader, PropertyInfo[] properties, int fieldCount)
     {
-        return default!;
+        var instance = Activator.CreateInstance<T>();
+        for (var i = 0; i < fieldCount; i++)
+        {
+            var fieldName = reader.GetName(i);
+            var property =
+                properties.FirstOrDefault(p => p.Name.Equals(fieldName, StringComparison.OrdinalIgnoreCase));
+            if (property == null || reader.IsDBNull(i)) continue;
+            var value = reader.GetValue(i);
+            if (value != DBNull.Value)
+                property.SetValue(instance, Convert.ChangeType(value, property.PropertyType));
+        }
+
+        return instance;
+    }
+
+    private T? TryToGetEntry<T>(string select)
+    {
+        try
+        {
+            using var command = _connection.CreateCommand();
+            command.CommandText = select;
+            using var reader = command.ExecuteReader();
+            if (!reader.Read())
+                throw new NotEntryException();
+            var properties = typeof(T).GetProperties();
+            var fieldCount = reader.FieldCount;
+            return GetEntry<T>(reader, properties, fieldCount);
+        }
+        catch(NotEntryException e)
+        {
+            Console.WriteLine(e);
+            return default!;
+        }
     }
 
     // public TraditionalStatistics? GetTraditionalStatistics(string name)
