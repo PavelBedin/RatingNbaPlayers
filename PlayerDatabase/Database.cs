@@ -285,6 +285,46 @@ public class Database : IDisposable
         }
     }
 
+    public IEnumerable<TraditionalStatistics> GetAllTraditionalStatistics()
+    {
+        var list = new List<TraditionalStatistics>();
+        using var command = _connection.CreateCommand();
+        command.CommandText = "SELECT * FROM Traditional_Statistics";
+        using var reader = command.ExecuteReader();
+        while (reader.Read())
+        {
+            var values = new object[24];
+            reader.GetValues(values);
+            var id = reader.GetInt32(0);
+            list.Add(new TraditionalStatistics(id, values));
+        }
+
+        return list;
+    }
+
+    public TraditionalStatistics? GetTraditionalStatistics(string name)
+    {
+        try
+        {
+            var id = TakePlayerOrTeamId(name, "Players");
+            if (id == 0)
+                throw new NotEntryException();
+            using var command = _connection.CreateCommand();
+            command.CommandText = $"SELECT * FROM Traditional_Statistics WHERE Player_Id = {id}";
+            using var reader = command.ExecuteReader();
+            if (!reader.Read())
+                throw new NotEntryException();
+            var values = new object[24];
+            reader.GetValues(values);
+            return new TraditionalStatistics(id, values);
+        }
+        catch (NotEntryException e)
+        {
+            Console.WriteLine(e);
+            return null;
+        }
+    }
+
     private int TakeLastId(string tableName)
     {
         using var command = _connection.CreateCommand();
