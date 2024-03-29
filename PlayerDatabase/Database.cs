@@ -29,22 +29,19 @@ public class Database : IDisposable
 
     private int AddPlayerOrTeam(string name, string table)
     {
-        using var insertCommand = _connection.CreateCommand();
         var id = TakeLastId($"{table}") + 1;
-        insertCommand.CommandText = $"INSERT INTO {table} (Id, Name) VALUES ({id}, '{name}')";
-        insertCommand.ExecuteNonQuery();
+        AddEntry(table, $"{id}, '{name}'");
         return id;
     }
 
-    public void AddPlayerRating(string namePlayer, int rating, int id = 0)
+    public void AddPlayerRating(PlayerRating rating)
     {
+        var id = rating.Id;
         if (id == 0)
-            id = TakePlayerOrTeamId(namePlayer, "Players");
+            id = TakePlayerOrTeamId(rating.Name, "Players");
         if (id == 0)
-            id = AddPlayer(namePlayer);
-        using var command = _connection.CreateCommand();
-        command.CommandText = $"INSERT INTO Rating(PlayerId, Rating) VALUES ({id}, {rating})";
-        command.ExecuteNonQuery();
+            id = AddPlayer(rating.Name);
+        AddEntry("Rating", $"{id}, {rating.Rating}");
     }
 
     public void AddPlayerInTeam(string namePlayer, string nameTeam)
@@ -55,48 +52,25 @@ public class Database : IDisposable
             playerId = AddPlayer(namePlayer);
         if (TakePlayerOrTeamId(nameTeam, "Teams") == 0)
             teamId = AddTeam(nameTeam);
-        using var command = _connection.CreateCommand();
-        command.CommandText = $"INSERT INTO Player_In_Team(PlayerId, TeamId) VALUES ({playerId}, {teamId})";
-        command.ExecuteNonQuery();
+        AddEntry("Player_In_Team", $"{playerId}, {teamId}");
     }
 
     public void AddTraditionalStatistics(TraditionalStatistics ts)
     {
         try
         {
-            using var command = _connection.CreateCommand();
+            if (ts.PlayerId == 0)
+                throw new NotEntryException();
+            if (GetPlayerById(ts.PlayerId) == null)
+                throw new NotEntryException();
             var queryBuilder = new StringBuilder();
-            queryBuilder.Append("INSERT INTO Traditional_Statistics (PlayerId, GamePlayed, MinutesPlayed, ");
-            queryBuilder.Append("PPG, FGM, FGA, FGP, TPM, TPA, TPP, FTM, FTA, FTP, OREB, DRED, REB, AST, TOV, ");
-            queryBuilder.Append("STL, BLK, PF, DD2, TD3, PM) VALUES (");
-            queryBuilder.Append($"{ts.PlayerId}, ");
-            queryBuilder.Append($"{ts.GamePlayed}, ");
-            queryBuilder.Append($"{ts.MinutesPlayed}, ");
-            queryBuilder.Append($"{ts.PPG}, ");
-            queryBuilder.Append($"{ts.FGM}, ");
-            queryBuilder.Append($"{ts.FGA}, ");
-            queryBuilder.Append($"{ts.FGP}, ");
-            queryBuilder.Append($"{ts.TPM}, ");
-            queryBuilder.Append($"{ts.TPA}, ");
-            queryBuilder.Append($"{ts.TPP}, ");
-            queryBuilder.Append($"{ts.FTM}, ");
-            queryBuilder.Append($"{ts.FTA}, ");
-            queryBuilder.Append($"{ts.FTP}, ");
-            queryBuilder.Append($"{ts.OREB}, ");
-            queryBuilder.Append($"{ts.DRED}, ");
-            queryBuilder.Append($"{ts.REB}, ");
-            queryBuilder.Append($"{ts.AST}, ");
-            queryBuilder.Append($"{ts.TOV}, ");
-            queryBuilder.Append($"{ts.STL}, ");
-            queryBuilder.Append($"{ts.BLK}, ");
-            queryBuilder.Append($"{ts.PF}, ");
-            queryBuilder.Append($"{ts.DD2}, ");
-            queryBuilder.Append($"{ts.TD3}, ");
-            queryBuilder.Append($"{ts.PM})");
-            command.CommandText = queryBuilder.ToString();
-            command.ExecuteScalar();
+            queryBuilder.Append($"{ts.PlayerId}, {ts.GamePlayed}, {ts.MinutesPlayed}, {ts.PPG}, {ts.FGM}, {ts.FGA}, ");
+            queryBuilder.Append($"{ts.FGP}, {ts.TPM}, {ts.TPA}, {ts.TPP}, {ts.FTM}, {ts.FTA}, {ts.FTP}, {ts.OREB}, ");
+            queryBuilder.Append($"{ts.DRED}, {ts.REB}, {ts.AST}, {ts.TOV}, {ts.STL}, {ts.BLK}, {ts.PF}, {ts.DD2}, ");
+            queryBuilder.Append($"{ts.TD3}, {ts.PM}");
+            AddEntry("Traditional_Statistics", queryBuilder.ToString());
         }
-        catch (SqliteException e)
+        catch (NotEntryException e)
         {
             Console.WriteLine(e);
         }
@@ -268,6 +242,12 @@ public class Database : IDisposable
         }
     }
 
+    private void AddEntry(string table, string values)
+    {
+        using var command = _connection.CreateCommand();
+        command.CommandText = $"INSERT INTO {table} VALUES ({values})";
+        command.ExecuteNonQuery();
+    }
 
     private int TakeLastId(string tableName)
     {
@@ -280,8 +260,7 @@ public class Database : IDisposable
     private int TakePlayerOrTeamId(string name, string table)
     {
         using var command = _connection.CreateCommand();
-        command.CommandText = $"SELECT Id FROM {table} WHERE Name = @Name";
-        command.Parameters.AddWithValue("@Name", name);
+        command.CommandText = $"SELECT Id FROM {table} WHERE Name = '{name}'";
         return command.ExecuteScalar() == DBNull.Value ? 0 : Convert.ToInt32(command.ExecuteScalar());
     }
 
