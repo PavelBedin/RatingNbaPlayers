@@ -103,12 +103,28 @@ public class Database : IDisposable
 
     public IEnumerable<Player?> GetAllPlayers()
     {
-        return GetAll<Player>("Players");
+        return GetAll<Player>(DefaultSelect("Players"));
     }
 
     public IEnumerable<Team?> GetAllTeams()
     {
-        return GetAll<Team>("Teams");
+        return GetAll<Team>(DefaultSelect("Teams"));
+    }
+
+    public IEnumerable<TraditionalStatistics?> GetAllTraditionalStatistics()
+    {
+        return GetAll<TraditionalStatistics>(DefaultSelect("Traditional_Statistics"));
+    }
+
+    public IEnumerable<PlayerInTeam?> GetAllPlayerInTeams()
+    {
+        return GetAll<PlayerInTeam>("SELECT p.Name AS PlayerId, t.Name FROM Player_In_Team pt " +
+                                    "JOIN Players p on p.Id = pt.PlayerId JOIN Teams t on pt.TeamId = t.Id");
+    }
+
+    public IEnumerable<PlayerRating?> GetAllPlayerRating()
+    {
+        return GetAll<PlayerRating>("SELECT Name, Id, Rating FROM Players p JOIN Rating r ON r.PlayerId = p.Id");
     }
 
 
@@ -187,40 +203,6 @@ public class Database : IDisposable
         }
     }
 
-    public IEnumerable<PlayerRating> GetAllPlayerRating()
-    {
-        var list = new List<PlayerRating>();
-        using var command = _connection.CreateCommand();
-        command.CommandText = "SELECT Name, Id, Rating FROM Players p JOIN Rating r ON r.PlayerId = p.Id";
-        using var reader = command.ExecuteReader();
-        while (reader.Read())
-        {
-            var name = reader.GetString(0);
-            var id = reader.GetInt32(1);
-            var rating = reader.GetInt32(2);
-            list.Add(new PlayerRating(name, id, rating));
-        }
-
-        return list;
-    }
-
-    public IEnumerable<PlayerInTeam> GetAllPlayerInTeams()
-    {
-        var list = new List<PlayerInTeam>();
-        using var command = _connection.CreateCommand();
-        command.CommandText = "SELECT p.Name, t.Name FROM Player_In_Team pt " +
-                              "JOIN Players p on p.Id = pt.PlayerId JOIN Teams t on pt.TeamId = t.Id";
-
-        using var reader = command.ExecuteReader();
-        while (reader.Read())
-        {
-            var namePlayer = reader.GetString(0);
-            var nameTeam = reader.GetString(1);
-            list.Add(new PlayerInTeam(namePlayer, nameTeam));
-        }
-
-        return list;
-    }
 
     public PlayerInTeam? GetTeamByPlayer(string namePlayer)
     {
@@ -268,11 +250,11 @@ public class Database : IDisposable
         }
     }
 
-    public IEnumerable<T?> GetAll<T>(string table)
+    private IEnumerable<T?> GetAll<T>(string select)
     {
         var list = new List<T?>();
         using var command = _connection.CreateCommand();
-        command.CommandText = $"SELECT * FROM {table}";
+        command.CommandText = select;
         using var reader = command.ExecuteReader();
         var properties = typeof(T).GetProperties();
         var fieldCount = reader.FieldCount;
@@ -294,6 +276,11 @@ public class Database : IDisposable
         }
 
         return list;
+    }
+
+    private T? GetEntry<T>()
+    {
+        return default!;
     }
 
     // public TraditionalStatistics? GetTraditionalStatistics(string name)
@@ -333,6 +320,11 @@ public class Database : IDisposable
         command.CommandText = $"SELECT Id FROM {table} WHERE Name = @Name";
         command.Parameters.AddWithValue("@Name", name);
         return command.ExecuteScalar() == DBNull.Value ? 0 : Convert.ToInt32(command.ExecuteScalar());
+    }
+
+    private string DefaultSelect(string table)
+    {
+        return $"SELECT * FROM {table}";
     }
 
 
