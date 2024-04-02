@@ -30,4 +30,29 @@ public record TraditionalStatistics(
     public TraditionalStatistics() : this(0)
     {
     }
+
+    public TraditionalStatistics(int id, double[] statistics) : this(
+        id, 
+        (int)statistics[0],
+        statistics[1],
+        statistics[2],
+        statistics[3],
+        statistics[4],
+        statistics[5],
+        statistics[6],
+        statistics[7],
+        statistics[8],
+        statistics[9],
+        statistics[10],
+        statistics[11],
+        statistics[12],
+        statistics[13],
+        statistics[14],
+        statistics[15],
+        statistics[16],
+        statistics[17],
+        statistics[18],
+        statistics[20])
+    {
+    }
 }
