@@ -1,4 +1,4 @@
-﻿namespace Data_base;
+﻿namespace DataBase;
 
 public record PlayerRating(string Name, int Id, int Rating)
 {

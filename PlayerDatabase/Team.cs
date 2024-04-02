@@ -1,4 +1,4 @@
-﻿namespace Data_base;
+﻿namespace DataBase;
 
 public record Team(int Id, string Name)
 {

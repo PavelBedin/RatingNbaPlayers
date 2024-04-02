@@ -1,6 +1,5 @@
 ﻿using System.Reflection;
 using System.Text;
-using Data_base;
 using Data_base.Exceptions;
 using Microsoft.Data.Sqlite;
 
