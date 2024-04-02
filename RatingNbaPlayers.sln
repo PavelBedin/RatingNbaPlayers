@@ -2,6 +2,8 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlayerDatabase", "PlayerDatabase\PlayerDatabase.csproj", "{65912B80-01E3-4DD6-B284-FE159671A81D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FillingDatabase", "FillingDatabase\FillingDatabase.csproj", "{8CC96F13-1255-44B5-A0D4-185933A4D329}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +14,9 @@ Global
 		{65912B80-01E3-4DD6-B284-FE159671A81D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{65912B80-01E3-4DD6-B284-FE159671A81D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{65912B80-01E3-4DD6-B284-FE159671A81D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8CC96F13-1255-44B5-A0D4-185933A4D329}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8CC96F13-1255-44B5-A0D4-185933A4D329}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8CC96F13-1255-44B5-A0D4-185933A4D329}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8CC96F13-1255-44B5-A0D4-185933A4D329}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
