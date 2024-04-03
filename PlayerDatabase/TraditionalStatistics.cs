@@ -55,4 +55,13 @@ public record TraditionalStatistics(
         statistics[19])
     {
     }
+    
+    public List<string?> ToList()
+    {
+        return GetType().GetProperties()
+            .Where(p => p.PropertyType == typeof(double) || p.PropertyType == typeof(int))
+            .Select(p => p.GetValue(this)?.ToString())
+            .Select(s => s.Replace(",", "."))
+            .ToList();
+    }
 }
