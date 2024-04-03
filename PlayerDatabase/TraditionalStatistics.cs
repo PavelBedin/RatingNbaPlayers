@@ -52,7 +52,7 @@ public record TraditionalStatistics(
         statistics[16],
         statistics[17],
         statistics[18],
-        statistics[20])
+        statistics[19])
     {
     }
 }
