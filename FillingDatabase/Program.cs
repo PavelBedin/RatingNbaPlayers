@@ -22,8 +22,8 @@ public class Program
                     continue;
                 var id = db.AddPlayer(playerName);
                 players.Add(playerName);
-                
-                db.AddTraditionalStatistics(new TraditionalStatistics(id, FormingTradStat(node)));
+
+                db.AddTraditionalStatistics(new TraditionalStatistics(id, FormingStat(node, "FieldsTradStat.txt")));
             }
         }
         catch (NullReferenceException e)
@@ -32,13 +32,25 @@ public class Program
         }
     }
 
-    private static double[] FormingTradStat(HtmlNode node)
+    private static double[] FormingStat(HtmlNode node, string path)
     {
-        var playerStats = node
-            .SelectNodes(
-                ".//td[@data-stat!='player' and @data-stat!='pos' and @data-stat!='team_id' and @data-stat!='age']")
-            ?.Select(td => string.IsNullOrEmpty(td.InnerText) ? "0" : td.InnerText.Replace(".", ","))
-            .Select(Double.Parse)
-            .ToArray();
+        var lines = File.ReadAllLines(path);
+        var n = lines.Length;
+        var stat = new double[n];
+        for (var i = 0; i < n; i++)
+        {
+            stat[i] = ParseToDouble(node.SelectSingleNode($".//td[@data-stat='{lines[i]}']")?.InnerText);
+        }
+
+        return stat;
+    }
+
+    private static double ParseToDouble(string? str)
+    {
+        if (string.IsNullOrEmpty(str))
+            return 0;
+        if (str.StartsWith("."))
+            str.Trim('.').Insert(1, ".");
+        return double.Parse(str.Replace(".", ","));
     }
 }
