@@ -63,11 +63,12 @@ public class Database : IDisposable
                 throw new NotEntryException();
             if (GetPlayerById(ts.PlayerId) == null)
                 throw new NotEntryException();
+            var list = ts.ToList();
             var queryBuilder = new StringBuilder();
-            queryBuilder.Append($"{ts.PlayerId}, {ts.GamePlayed}, {ts.MinutesPlayed}, {ts.PPG}, {ts.FGM}, {ts.FGA}, ");
-            queryBuilder.Append($"{ts.FGP}, {ts.TPM}, {ts.TPA}, {ts.TPP}, {ts.FTM}, {ts.FTA}, {ts.FTP}, {ts.OREB}, ");
-            queryBuilder.Append($"{ts.DRED}, {ts.REB}, {ts.AST}, {ts.TOV}, {ts.STL}, {ts.BLK}, {ts.PF}, {ts.DD2}, ");
-            queryBuilder.Append($"{ts.TD3}, {ts.PM}");
+            foreach (var node in list)
+                queryBuilder.Append($"{node}, ");
+
+            queryBuilder.Remove(queryBuilder.Length - 2, 2);
             AddEntry("Traditional_Statistics", queryBuilder.ToString());
         }
         catch (NotEntryException e)
