@@ -20,7 +20,7 @@ public class Program
                 var playerName = node.SelectSingleNode(".//td[@data-stat='player']")?.InnerText;
                 if (playerName == null || players.Contains(playerName))
                     continue;
-                var id = db.AddPlayer(playerName);
+                var id = db.AddPlayer(FormingName(playerName));
                 players.Add(playerName);
 
                 db.AddTraditionalStatistics(new TraditionalStatistics(id, FormingStat(node, "FieldsTradStat.txt")));
@@ -52,5 +52,10 @@ public class Program
         if (str.StartsWith("."))
             str = str.Trim('.').Insert(2, ".");
         return double.Parse(str.Replace(".", ","));
+    }
+
+    private static string FormingName(string name)
+    {
+        return name.Replace("'", "");
     }
 }
