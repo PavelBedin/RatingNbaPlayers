@@ -28,7 +28,8 @@ public class Database : IDisposable
 
     private int AddPlayerOrTeam(string name, string table)
     {
-        var id = TakeLastId($"{table}") + 1;
+        var tryId = TakePlayerOrTeamId(name, table);
+        var id = tryId == 0 ? TakeLastId($"{table}") + 1 : tryId;
         AddEntry(table, $"{id}, '{name}'");
         return id;
     }
