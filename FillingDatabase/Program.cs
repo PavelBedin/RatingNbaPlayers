@@ -50,7 +50,7 @@ public class Program
         if (string.IsNullOrEmpty(str))
             return 0;
         if (str.StartsWith("."))
-            str.Trim('.').Insert(1, ".");
+            str = str.Trim('.').Insert(2, ".");
         return double.Parse(str.Replace(".", ","));
     }
 }
