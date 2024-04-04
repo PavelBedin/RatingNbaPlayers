@@ -25,7 +25,7 @@
 
         private AdvancedStatistics(int id, double[] statistics) : this(
             id,
-            (int)statistics[0],
+            statistics[0],
             statistics[1],
             statistics[2],
             statistics[3],
