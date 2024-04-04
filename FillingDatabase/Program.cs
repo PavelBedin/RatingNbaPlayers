@@ -19,7 +19,7 @@ public static class Program
             TraditionalStatistics.Create, "FieldsTradStat.txt");
         AddToDatabase((IStatisticsPlayer player) => Db.AddAdvancedStatistics((AdvancedStatistics)player),
             HttpsRequests.HttpsRequests.GetAdvancedStatistics(),
-            TraditionalStatistics.Create, "FieldsAdvStat.txt");
+            AdvancedStatistics.Create, "FieldsAdvStat.txt");
         ;
     }
 
