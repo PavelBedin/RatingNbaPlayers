@@ -25,14 +25,14 @@ public record TraditionalStatistics(
     int DD2 = 0, // Double Doubles
     int TD3 = 0, // Triple Doubles
     double PM = 0 // Plus-Minus
-):IStatisticsPlayer
+) : IStatisticsPlayer
 {
     public TraditionalStatistics() : this(0)
     {
     }
 
     public TraditionalStatistics(int id, double[] statistics) : this(
-        id, 
+        id,
         (int)statistics[0],
         statistics[1],
         statistics[2],
@@ -55,7 +55,7 @@ public record TraditionalStatistics(
         statistics[19])
     {
     }
-    
+
     public List<string?> ToList()
     {
         return GetType().GetProperties()
@@ -63,5 +63,10 @@ public record TraditionalStatistics(
             .Select(p => p.GetValue(this)?.ToString())
             .Select(s => s.Replace(",", "."))
             .ToList();
+    }
+
+    public static IStatisticsPlayer Create(int id, double[] stat)
+    {
+        return new TraditionalStatistics(id, stat);
     }
 }

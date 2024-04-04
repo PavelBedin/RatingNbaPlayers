@@ -2,5 +2,6 @@ namespace DataBase;
 
 public interface IStatisticsPlayer
 {
-    List<string?> ToList();
+    public List<string?> ToList();
+    public static abstract IStatisticsPlayer Create(int id, double[] stat);
 }
