@@ -31,7 +31,7 @@ public record TraditionalStatistics(
     {
     }
 
-    public TraditionalStatistics(int id, double[] statistics) : this(
+    private TraditionalStatistics(int id, double[] statistics) : this(
         id,
         (int)statistics[0],
         statistics[1],
