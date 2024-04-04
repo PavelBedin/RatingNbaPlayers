@@ -25,7 +25,7 @@ public record TraditionalStatistics(
     int DD2 = 0, // Double Doubles
     int TD3 = 0, // Triple Doubles
     double PM = 0 // Plus-Minus
-)
+):IStatisticsPlayer
 {
     public TraditionalStatistics() : this(0)
     {
