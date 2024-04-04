@@ -57,44 +57,12 @@ public class Database : IDisposable
 
     public void AddTraditionalStatistics(TraditionalStatistics ts)
     {
-        try
-        {
-            if (ts.PlayerId == 0)
-                throw new NotEntryException();
-            if (GetPlayerById(ts.PlayerId) == null)
-                throw new NotEntryException();
-            var list = ts.ToList();
-            var queryBuilder = new StringBuilder();
-            foreach (var node in list)
-                queryBuilder.Append($"{node}, ");
-
-            queryBuilder.Remove(queryBuilder.Length - 2, 2);
-            AddEntry("Traditional_Statistics", queryBuilder.ToString());
-        }
-        catch (NotEntryException e)
-        {
-            Console.WriteLine(e);
-        }
+        AddIStatistics(ts, "Traditional_Statistics");
     }
 
     public void AddAdvancedStatistics(AdvancedStatistics ads)
     {
-        try
-        {
-            if (ads.PlayerId == 0)
-                throw new NotEntryException();
-            if (GetPlayerById(ads.PlayerId) == null)
-                throw new NotEntryException();
-            var queryBuilder = new StringBuilder();
-            queryBuilder.Append($"{ads.PlayerId}, {ads.OFFRTG}, {ads.DEFRTG}, {ads.NETRTG}, {ads.ASTP}, {ads.ASTTO}, ");
-            queryBuilder.Append($"{ads.ASTR}, {ads.OREBP}, {ads.DREBP}, {ads.REBP}, {ads.TOR}, {ads.EFGP}, ");
-            queryBuilder.Append($"{ads.TSP}, {ads.USGP}, {ads.PACE}, {ads.PIE}");
-            AddEntry("Advanced_Statistics", queryBuilder.ToString());
-        }
-        catch (NotEntryException e)
-        {
-            Console.WriteLine(e);
-        }
+        AddIStatistics(ads, "Advanced_Statistics");
     }
 
     public IEnumerable<Player?> GetAllPlayers()
@@ -309,6 +277,28 @@ public class Database : IDisposable
     private string DefaultSelect(string table)
     {
         return $"SELECT * FROM {table}";
+    }
+
+    private void AddIStatistics(IStatisticsPlayer statistics, string table)
+    {
+        try
+        {
+            if (statistics.PlayerId == 0)
+                throw new NotEntryException();
+            if (GetPlayerById(statistics.PlayerId) == null)
+                throw new NotEntryException();
+            var list = statistics.ToList();
+            var queryBuilder = new StringBuilder();
+            foreach (var node in list)
+                queryBuilder.Append($"{node}, ");
+
+            queryBuilder.Remove(queryBuilder.Length - 2, 2);
+            AddEntry(table, queryBuilder.ToString());
+        }
+        catch (NotEntryException e)
+        {
+            Console.WriteLine(e);
+        }
     }
 
 
