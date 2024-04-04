@@ -1,11 +1,24 @@
 ﻿using HtmlAgilityPack;
 
+namespace HttpsRequests;
+
 internal static class HttpsRequests
 {
-    public static async Task<HtmlNodeCollection?> GetTraditionalStatistics()
+    public static HtmlNodeCollection? GetTraditionalStatistics()
     {
         const string url = "https://www.basketball-reference.com/leagues/NBA_2024_per_game.html";
 
+        return GetStatistics(url).Result;
+    }
+
+    public static HtmlNodeCollection? GetAdvancedStatistics()
+    {
+        const string url = "https://www.basketball-reference.com/leagues/NBA_2024_advanced.html";
+        return GetStatistics(url).Result;
+    }
+
+    private static async Task<HtmlNodeCollection?> GetStatistics(string url)
+    {
         using var client = new HttpClient();
 
         var response = await client.GetAsync(url);
