@@ -4,26 +4,41 @@ namespace FillingDatabase;
 
 using DataBase;
 
-public class Program
+internal delegate void AddStatistics(IStatisticsPlayer statistics);
+
+internal delegate IStatisticsPlayer Create(int id, double[] stat);
+
+public static class Program
 {
+    private static readonly Database Db = new Database(File.ReadAllText("path.txt").Trim());
+
     public static void Main()
     {
-        var db = new Database(File.ReadAllText("path.txt").Trim());
+        AddToDatabase((IStatisticsPlayer player) => Db.AddTraditionalStatistics((TraditionalStatistics)player),
+            HttpsRequests.HttpsRequests.GetTraditionalStatistics(),
+            TraditionalStatistics.Create, "FieldsTradStat.txt");
+        AddToDatabase((IStatisticsPlayer player) => Db.AddAdvancedStatistics((AdvancedStatistics)player),
+            HttpsRequests.HttpsRequests.GetAdvancedStatistics(),
+            TraditionalStatistics.Create, "FieldsAdvStat.txt");
+        ;
+    }
+
+    private static void AddToDatabase(AddStatistics statisticsDelegate, HtmlNodeCollection collection,
+        Create createDelegate, string path)
+    {
         try
         {
-            var collectionTradStat = HttpsRequests.GetTraditionalStatistics().Result;
-            if (collectionTradStat == null)
+            if (collection == null)
                 throw new NullReferenceException();
             var players = new HashSet<string>();
-            foreach (var node in collectionTradStat)
+            foreach (var node in collection)
             {
                 var playerName = node.SelectSingleNode(".//td[@data-stat='player']")?.InnerText;
                 if (playerName == null || players.Contains(playerName))
                     continue;
-                var id = db.AddPlayer(FormingName(playerName));
+                var id = Db.AddPlayer(FormingName(playerName));
                 players.Add(playerName);
-
-                db.AddTraditionalStatistics(new TraditionalStatistics(id, FormingStat(node, "FieldsTradStat.txt")));
+                statisticsDelegate(createDelegate(id, FormingStat(node, path)));
             }
         }
         catch (NullReferenceException e)
