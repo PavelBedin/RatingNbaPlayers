@@ -1,6 +1,6 @@
-/bin
+bin/
 .idea/
 AllPaths/Program.cs
-/obj
+obj/
 PlayerDatabase/Program.cs
 Rating/
