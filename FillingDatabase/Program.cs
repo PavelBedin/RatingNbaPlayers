@@ -1,7 +1,9 @@
+using System.Reflection;
 using HtmlAgilityPack;
 
 namespace FillingDatabase;
 
+using AllPaths;
 using DataBase;
 
 internal delegate void AddStatistics(IStatisticsPlayer statistics);
@@ -10,16 +12,17 @@ internal delegate IStatisticsPlayer Create(int id, double[] stat);
 
 public static class Program
 {
-    private static readonly Database Db = new Database(File.ReadAllText("path.txt").Trim());
+    private static readonly Database Db = new();
 
     public static void Main()
     {
+        var path = new FindPath();
         AddToDatabase((IStatisticsPlayer player) => Db.AddTraditionalStatistics((TraditionalStatistics)player),
             HttpsRequests.HttpsRequests.GetTraditionalStatistics(),
-            TraditionalStatistics.Create, "FieldsTradStat.txt");
+            TraditionalStatistics.Create, path.GetFullPath("FieldsTradStat"));
         AddToDatabase((IStatisticsPlayer player) => Db.AddAdvancedStatistics((AdvancedStatistics)player),
             HttpsRequests.HttpsRequests.GetAdvancedStatistics(),
-            AdvancedStatistics.Create, "FieldsAdvStat.txt");
+            AdvancedStatistics.Create, path.GetFullPath("FieldsAdvStat"));
         ;
     }
 
