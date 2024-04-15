@@ -2,6 +2,7 @@
 using System.Text;
 using Data_base.Exceptions;
 using Microsoft.Data.Sqlite;
+using AllPaths;
 
 namespace DataBase;
 
@@ -9,9 +10,10 @@ public class Database : IDisposable
 {
     private readonly SqliteConnection _connection;
 
-    public Database(string dataBaseName = "NBA.db")
+    public Database()
     {
-        _connection = new SqliteConnection($"Data Source={dataBaseName}");
+        var path = new FindPath();
+        _connection = new SqliteConnection($"Data Source={path.GetFullPath("Database")}");
         _connection.Open();
     }
 

@@ -4,20 +4,21 @@ namespace AllPaths
 {
     public class FindPath
     {
+        private string _solutionPath;
         private XDocument _doc;
 
         public FindPath()
         {
-            var solutionPath = Directory.GetCurrentDirectory();
+            _solutionPath = Directory.GetCurrentDirectory();
             for (var i = 0; i < 4; i++)
             {
-                if (solutionPath == null) continue;
-                solutionPath = Directory.GetParent(solutionPath)?.FullName;
+                if (_solutionPath == null) continue;
+                _solutionPath = Directory.GetParent(_solutionPath)?.FullName;
             }
 
             try
             {
-                _doc = XDocument.Load(Path.Combine(solutionPath, "pom.xml"));
+                _doc = XDocument.Load(Path.Combine(_solutionPath, "pom.xml"));
             }
             catch (Exception e)
             {
@@ -30,8 +31,8 @@ namespace AllPaths
         {
             try
             {
-                return _doc.Descendants("file")
-                    .FirstOrDefault(e => e.Attribute("name")?.Value == name).Value;
+                return Path.Combine(_solutionPath, _doc.Descendants("file")
+                    .FirstOrDefault(e => e.Attribute("name")?.Value == name).Attribute("path").Value);
             }
             catch (NullReferenceException e)
             {

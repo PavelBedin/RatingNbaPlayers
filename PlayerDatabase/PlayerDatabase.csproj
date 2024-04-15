@@ -16,4 +16,8 @@
       <Folder Include="SqlScripts\" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\AllPaths\AllPaths.csproj" />
+    </ItemGroup>
+
 </Project>
