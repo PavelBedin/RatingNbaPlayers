@@ -1,1 +1,6 @@
-/FillingDatabase/**/FillingDatabase.dll
+/bin
+.idea/
+AllPaths/Program.cs
+/obj
+PlayerDatabase/Program.cs
+Rating/
