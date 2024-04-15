@@ -105,21 +105,26 @@ CREATE TRIGGER IF NOT EXISTS update_existing_player_in_advanced_statistics
     FOR EACH ROW
 BEGIN
     UPDATE Advanced_Statistics
-    SET OFFRTG = NEW.OFFRTG,
-        DEFRTG = NEW.DEFRTG,
-        NETRTG = NEW.NETRTG,
-        ASTP   = NEW.ASTP,
-        ASTTO  = NEW.ASTTO,
-        ASTR   = NEW.ASTR,
+    SET PER = NEW.PER,
+        TSP = NEW.TSP,
+        TPAR = NEW.TPAR,
+        FTR   = NEW.FTR,
         OREBP  = NEW.OREBP,
-        DREBP  = NEW.DREBP,
-        REBP   = NEW.REBP,
-        TOR    = NEW.TOR,
-        EFGP   = NEW.EFGP,
-        TSP    = NEW.TSP,
-        USGP   = NEW.USGP,
-        PACE   = NEW.PACE,
-        PIE    = NEW.PIE
+        DREBP   = NEW.DREBP,
+        REBP  = NEW.REBP,
+        ASTP  = NEW.ASTP,
+        STLP   = NEW.STLP,
+        BLKP    = NEW.BLKP,
+        TOVP   = NEW.TOVP,
+        USGP    = NEW.USGP,
+        OWS   = NEW.OWS,
+        DWS   = NEW.DWS,
+        WS    = NEW.WS,
+        WS48 = NEW.WS48,
+        OBPM = NEW.OBPM,
+        DBPM = NEW.DBPM,
+        BPM = NEW.BPM,
+        VORP = NEW.VORP
     WHERE PlayerId = NEW.PlayerId;
 
     SELECT CASE

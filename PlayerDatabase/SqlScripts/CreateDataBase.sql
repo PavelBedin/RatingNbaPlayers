@@ -63,20 +63,25 @@ CREATE TABLE IF NOT EXISTS Traditional_Statistics
 CREATE TABLE IF NOT EXISTS Advanced_Statistics
 (
     PlayerId INTEGER,
-    OFFRTG    REAL, --Offensive Rating
-    DEFRTG    REAL, --Defensive Rating
-    NETRTG    REAL, --NET Rating
-    ASTP      REAL, --Assist Percentage
-    ASTTO     REAL, --Assist to Turnover Ratio
-    ASTR      REAL, --Assist Ratio
-    OREBP     REAL, --Offensive Rebounds Percentage
-    DREBP     REAL, --Defensive Rebounds Percentage
-    REBP      REAL, --Rebounds Percentage
-    TOR       REAL, --Turnover Ratio
-    EFGP      REAL, --Effective Field Goals Percentage
-    TSP       REAL, --True Shooting Percentage
-    USGP      REAL, --Usage Percentage
-    PACE      REAL,
-    PIE       REAL, --Player Impact Estimate
+    REAL PER = 0, -- Player efficiency rating
+    REAL TSP = 0, -- True shooting percentage
+    REAL TPAR = 0, -- 3 point attempt rate
+    REAL FTR = 0, -- Free throw attempt rate
+    REAL OREBP = 0, -- Offensive rebounds percentage
+    REAL DREBP = 0, -- Defensive rebounds percentage
+    REAL REBP = 0, -- Rebounds percentage
+    REAL ASTP = 0, -- Percentage of assists
+    REAL STLP = 0, -- Percentage of steal
+    REAL BLKP = 0, -- Percentage of block
+    REAL TOVP = 0, -- Percentage of turnover
+    REAL USGP = 0, -- Usage percentage
+    REAL OWS = 0, -- Offensive win shares
+    REAL DWS = 0, -- Defensive win shares
+    REAL WS = 0, -- Win shares
+    REAL WS48 = 0, -- Win shares per 48 minutes
+    REAL OBPM = 0, -- Offensive box plus/minus
+    REAL DBPM = 0, -- Defensive box plus/minus
+    REAL BPM = 0, -- Box plus/minus
+    REAL VORP = 0 -- Value over replacement player
     FOREIGN KEY (PlayerId) REFERENCES Players (Id)
 );
