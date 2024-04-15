@@ -16,4 +16,8 @@
       <ProjectReference Include="..\PlayerDatabase\PlayerDatabase.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="fields\" />
+    </ItemGroup>
+
 </Project>
