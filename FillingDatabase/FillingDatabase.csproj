@@ -17,7 +17,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="fields\" />
+      <Folder Include="Fields\" />
     </ItemGroup>
 
 </Project>
