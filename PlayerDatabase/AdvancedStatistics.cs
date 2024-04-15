@@ -58,7 +58,7 @@
             return GetType().GetProperties()
                 .Where(p => p.PropertyType == typeof(double) || p.PropertyType == typeof(int))
                 .Select(p => p.GetValue(this)?.ToString())
-                .Select(s => s.Replace(",", "."))
+                .Select(s => s?.Replace(",", "."))
                 .ToList();
         }
 

@@ -1,6 +1,6 @@
 ﻿using HtmlAgilityPack;
 
-namespace HttpsRequests;
+namespace FillingDatabase;
 
 internal static class HttpsRequests
 {

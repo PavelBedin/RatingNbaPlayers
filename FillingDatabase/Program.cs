@@ -1,4 +1,3 @@
-using System.Reflection;
 using HtmlAgilityPack;
 
 namespace FillingDatabase;
@@ -17,13 +16,12 @@ public static class Program
     public static void Main()
     {
         var path = new FindPath();
-        AddToDatabase((IStatisticsPlayer player) => Db.AddTraditionalStatistics((TraditionalStatistics)player),
-            HttpsRequests.HttpsRequests.GetTraditionalStatistics(),
+        AddToDatabase(player => Db.AddTraditionalStatistics((TraditionalStatistics)player),
+            HttpsRequests.GetTraditionalStatistics(),
             TraditionalStatistics.Create, path.GetFullPath("FieldsTradStat"));
-        AddToDatabase((IStatisticsPlayer player) => Db.AddAdvancedStatistics((AdvancedStatistics)player),
-            HttpsRequests.HttpsRequests.GetAdvancedStatistics(),
+        AddToDatabase(player => Db.AddAdvancedStatistics((AdvancedStatistics)player),
+            HttpsRequests.GetAdvancedStatistics(),
             AdvancedStatistics.Create, path.GetFullPath("FieldsAdvStat"));
-        ;
     }
 
     private static void AddToDatabase(AddStatistics statisticsDelegate, HtmlNodeCollection collection,

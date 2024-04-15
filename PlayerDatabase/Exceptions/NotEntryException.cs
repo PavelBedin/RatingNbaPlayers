@@ -1,4 +1,4 @@
-﻿namespace Data_base.Exceptions;
+﻿namespace DataBase.Exceptions;
 
 public class NotEntryException : Exception
 {

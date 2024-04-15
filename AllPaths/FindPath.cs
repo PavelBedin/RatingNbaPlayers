@@ -4,8 +4,8 @@ namespace AllPaths
 {
     public class FindPath
     {
-        private string _solutionPath;
-        private XDocument _doc;
+        private readonly string _solutionPath;
+        private readonly XDocument _doc;
 
         public FindPath()
         {

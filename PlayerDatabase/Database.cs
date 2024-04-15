@@ -1,8 +1,8 @@
 ﻿using System.Reflection;
 using System.Text;
-using Data_base.Exceptions;
 using Microsoft.Data.Sqlite;
 using AllPaths;
+using DataBase.Exceptions;
 
 namespace DataBase;
 
