@@ -71,24 +71,24 @@ BEGIN
     UPDATE Traditional_Statistics
     SET GamePlayed    = NEW.GamePlayed,
         MinutesPlayed = NEW.MinutesPlayed,
-        PPG            = NEW.PPG,
-        FGM            = NEW.FGM,
-        FGA            = NEW.FGA,
-        FGP            = NEW.FGP,
-        TPM            = NEW.TPM,
-        TPA            = NEW.TPA,
-        TPP            = NEW.TPP,
-        FTM            = NEW.FTM,
-        FTA            = NEW.FTA,
-        FTP            = NEW.FTP,
-        OREB           = NEW.OREB,
-        DRED           = NEW.DRED,
-        REB            = NEW.REB,
-        AST            = NEW.AST,
-        TOV            = NEW.TOV,
-        STL            = NEW.STL,
-        BLK            = NEW.BLK,
-        PF             = NEW.PF
+        PPG           = NEW.PPG,
+        FGM           = NEW.FGM,
+        FGA           = NEW.FGA,
+        FGP           = NEW.FGP,
+        TPM           = NEW.TPM,
+        TPA           = NEW.TPA,
+        TPP           = NEW.TPP,
+        FTM           = NEW.FTM,
+        FTA           = NEW.FTA,
+        FTP           = NEW.FTP,
+        OREB          = NEW.OREB,
+        DRED          = NEW.DRED,
+        REB           = NEW.REB,
+        AST           = NEW.AST,
+        TOV           = NEW.TOV,
+        STL           = NEW.STL,
+        BLK           = NEW.BLK,
+        PF            = NEW.PF
     WHERE PlayerId = NEW.PlayerId;
 
     SELECT CASE
@@ -105,26 +105,26 @@ CREATE TRIGGER IF NOT EXISTS update_existing_player_in_advanced_statistics
     FOR EACH ROW
 BEGIN
     UPDATE Advanced_Statistics
-    SET PER = NEW.PER,
-        TSP = NEW.TSP,
-        TPAR = NEW.TPAR,
+    SET PER   = NEW.PER,
+        TSP   = NEW.TSP,
+        TPAR  = NEW.TPAR,
         FTR   = NEW.FTR,
-        OREBP  = NEW.OREBP,
-        DREBP   = NEW.DREBP,
+        OREBP = NEW.OREBP,
+        DREBP = NEW.DREBP,
         REBP  = NEW.REBP,
         ASTP  = NEW.ASTP,
-        STLP   = NEW.STLP,
-        BLKP    = NEW.BLKP,
-        TOVP   = NEW.TOVP,
-        USGP    = NEW.USGP,
+        STLP  = NEW.STLP,
+        BLKP  = NEW.BLKP,
+        TOVP  = NEW.TOVP,
+        USGP  = NEW.USGP,
         OWS   = NEW.OWS,
         DWS   = NEW.DWS,
         WS    = NEW.WS,
-        WS48 = NEW.WS48,
-        OBPM = NEW.OBPM,
-        DBPM = NEW.DBPM,
-        BPM = NEW.BPM,
-        VORP = NEW.VORP
+        WS48  = NEW.WS48,
+        OBPM  = NEW.OBPM,
+        DBPM  = NEW.DBPM,
+        BPM   = NEW.BPM,
+        VORP  = NEW.VORP
     WHERE PlayerId = NEW.PlayerId;
 
     SELECT CASE
