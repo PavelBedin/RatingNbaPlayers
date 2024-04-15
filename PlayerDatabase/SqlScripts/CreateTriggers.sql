@@ -88,10 +88,7 @@ BEGIN
         TOV            = NEW.TOV,
         STL            = NEW.STL,
         BLK            = NEW.BLK,
-        PF             = NEW.PF,
-        DD2            = NEW.DD2,
-        TD3            = NEW.TD3,
-        PM             = NEW.PM
+        PF             = NEW.PF
     WHERE PlayerId = NEW.PlayerId;
 
     SELECT CASE

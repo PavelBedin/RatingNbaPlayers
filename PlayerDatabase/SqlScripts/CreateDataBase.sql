@@ -55,10 +55,7 @@ CREATE TABLE IF NOT EXISTS Traditional_Statistics
     TOV            REAL,    --Turnovers
     STL            REAL,    --Steals
     BLK            REAL,    --Blocks
-    PF             REAL,    --Personal Fouls
-    DD2            INTEGER, --Double Doubles
-    TD3            INTEGER, --Triple Doubles
-    PM             REAL,    --Plus-Minus
+    PF             REAL     --Personal Fouls
     FOREIGN KEY (PlayerId) REFERENCES Players (Id)
 );
 

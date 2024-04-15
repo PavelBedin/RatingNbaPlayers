@@ -21,10 +21,7 @@ public record TraditionalStatistics(
     double TOV = 0, // Turnovers
     double STL = 0, // Steals
     double BLK = 0, // Blocks
-    double PF = 0, // Personal Fouls
-    int DD2 = 0, // Double Doubles
-    int TD3 = 0, // Triple Doubles
-    double PM = 0 // Plus-Minus
+    double PF = 0 // Personal Fouls
 ) : IStatisticsPlayer
 {
     public TraditionalStatistics() : this(0)
