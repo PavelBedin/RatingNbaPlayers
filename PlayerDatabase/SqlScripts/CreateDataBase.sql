@@ -63,25 +63,25 @@ CREATE TABLE IF NOT EXISTS Traditional_Statistics
 CREATE TABLE IF NOT EXISTS Advanced_Statistics
 (
     PlayerId INTEGER,
-    REAL     PER,   -- Player efficiency rating
-    REAL     TSP,   -- True shooting percentage
-    REAL     TPAR,  -- 3 point attempt rate
-    REAL     FTR,   -- Free throw attempt rate
-    REAL     OREBP, -- Offensive rebounds percentage
-    REAL     DREBP, -- Defensive rebounds percentage
-    REAL     REBP,  -- Rebounds percentage
-    REAL     ASTP,  -- Percentage of assists
-    REAL     STLP,  -- Percentage of steal
-    REAL     BLKP,  -- Percentage of block
-    REAL     TOVP,  -- Percentage of turnover
-    REAL     USGP,  -- Usage percentage
-    REAL     OWS,   -- Offensive win shares
-    REAL     DWS,   -- Defensive win shares
-    REAL     WS,    -- Win shares
-    REAL     WS48,  -- Win shares per 48 minutes
-    REAL     OBPM,  -- Offensive box plus/minus
-    REAL     DBPM,  -- Defensive box plus/minus
-    REAL     BPM,   -- Box plus/minus
-    REAL     VORP,  -- Value over replacement player
+    PER      REAL, -- Player efficiency rating
+    TSP      REAL, -- True shooting percentage
+    TPAR     REAL, -- 3 point attempt rate
+    FTR      REAL, -- Free throw attempt rate
+    OREBP    REAL, -- Offensive rebounds percentage
+    DREBP    REAL, -- Defensive rebounds percentage
+    REBP     REAL, -- Rebounds percentage
+    ASTP     REAL, -- Percentage of assists
+    STLP     REAL, -- Percentage of steal
+    BLKP     REAL, -- Percentage of block
+    TOVP     REAL, -- Percentage of turnover
+    USGP     REAL, -- Usage percentage
+    OWS      REAL, -- Offensive win shares
+    DWS      REAL, -- Defensive win shares
+    WS       REAL, -- Win shares
+    WS48     REAL, -- Win shares per 48 minutes
+    OBPM     REAL, -- Offensive box plus/minus
+    DBPM     REAL, -- Defensive box plus/minus
+    BPM      REAL, -- Box plus/minus
+    VORP     REAL, -- Value over replacement player
     FOREIGN KEY (PlayerId) REFERENCES Players (Id)
 );
