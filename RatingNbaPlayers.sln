@@ -6,6 +6,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FillingDatabase", "FillingD
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rating", "Rating\Rating.csproj", "{7CB06356-A163-4BB7-BFA7-1044CBF78391}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AllPaths", "AllPaths\AllPaths.csproj", "{F9D30274-6679-4E25-ACE2-E2523F6B8F40}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +26,9 @@ Global
 		{7CB06356-A163-4BB7-BFA7-1044CBF78391}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7CB06356-A163-4BB7-BFA7-1044CBF78391}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7CB06356-A163-4BB7-BFA7-1044CBF78391}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F9D30274-6679-4E25-ACE2-E2523F6B8F40}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F9D30274-6679-4E25-ACE2-E2523F6B8F40}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F9D30274-6679-4E25-ACE2-E2523F6B8F40}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F9D30274-6679-4E25-ACE2-E2523F6B8F40}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
