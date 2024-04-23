@@ -3,4 +3,4 @@ bin/
 AllPaths/Program.cs
 obj/
 PlayerDatabase/Program.cs
-Rating/
+*.user
