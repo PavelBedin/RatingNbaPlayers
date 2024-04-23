@@ -1,4 +1,4 @@
-﻿namespace DataBase
+﻿namespace PlayerDatabase
 {
     public record AdvancedStatistics(
         int PlayerId, // Player identifier

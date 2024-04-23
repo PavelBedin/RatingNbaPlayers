@@ -1,9 +1,9 @@
 using HtmlAgilityPack;
+using PlayerDatabase;
 
 namespace FillingDatabase;
 
 using AllPaths;
-using DataBase;
 
 internal delegate void AddStatistics(IStatisticsPlayer statistics);
 

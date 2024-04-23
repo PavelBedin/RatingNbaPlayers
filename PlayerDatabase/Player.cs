@@ -1,4 +1,4 @@
-﻿namespace DataBase;
+﻿namespace PlayerDatabase;
 
 public record Player(int Id, string Name)
 {

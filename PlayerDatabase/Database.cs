@@ -1,10 +1,10 @@
 ﻿using System.Reflection;
 using System.Text;
-using Microsoft.Data.Sqlite;
 using AllPaths;
 using DataBase.Exceptions;
+using Microsoft.Data.Sqlite;
 
-namespace DataBase;
+namespace PlayerDatabase;
 
 public class Database : IDisposable
 {
