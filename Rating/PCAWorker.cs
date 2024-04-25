@@ -9,7 +9,7 @@ public class PCAWorker
 {
     public void MakePCA(IEnumerable<TraditionalStatistics> tradStat, IEnumerable<AdvancedStatistics> advStat)
     {
-        var data = new List<double>();
+        var data = new List<double[]>();
         var path = new FindPath();
         Runtime.PythonDLL = path.GetPythonPath();
         PythonEngine.Initialize();
@@ -24,14 +24,17 @@ public class PCAWorker
             {
                 string str = item.ToString();
                 var newStr = new string(str.Where(c => c != '[' && c != ']').ToArray());
-                data.Add(double.Parse(newStr, CultureInfo.InvariantCulture));
+                data.Add(newStr.Replace(".", ",")
+                    .Split().Where(x => !string.IsNullOrEmpty(x))
+                    .Select(double.Parse)
+                    .ToArray());
             }
         }
 
         PythonEngine.Shutdown();
         foreach (var value in data)
         {
-            Console.WriteLine(value);
+            Console.WriteLine(String.Join(", ", value));
         }
     }
 
@@ -39,6 +42,10 @@ public class PCAWorker
     {
         var type = typeof(T);
         var properties = type.GetProperties().Skip(1);
-        return stat.Select(item => properties.Select(p => Convert.ToDouble(p.GetValue(item))).ToArray()).ToList();
+        return stat
+            .Select(item => properties
+                .Select(p => Convert.ToDouble(p.GetValue(item)))
+                .ToArray())
+            .ToList();
     }
 }

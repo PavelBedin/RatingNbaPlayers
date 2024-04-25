@@ -15,6 +15,6 @@ class PCA_builder():
         length = len(data_trad_stat)
         self.data = self.data_processing(data_trad_stat, data_adv_stat)
         self.data.reshape((length, 2, -1)).mean(axis=1)
-        pca = PCA(n_components=1)
+        pca = PCA(n_components=2)
         transformed_data = pca.fit_transform(self.data)
         return transformed_data
