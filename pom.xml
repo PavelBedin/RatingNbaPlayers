@@ -4,5 +4,6 @@
     <file name="FieldsAdvStat" path="FillingDatabase\fields\FieldsAdvStat.txt"/>
     <file name="FieldsTradStat" path="FillingDatabase\fields\FieldsTradStat.txt"/>
     <file name="Database" path="PlayerDatabase\database\NBA.db"/>
-    <file name="PCA" path="venv\Scripts\python.exe"/>
+    <file name="PCA" path="Rating"/>
+    <file name="python.dll" path="C:\Users\Pasha\AppData\Local\Programs\Python\Python311\python311.dll"/>
 </files>

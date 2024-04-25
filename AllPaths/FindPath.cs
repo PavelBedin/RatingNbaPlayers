@@ -40,5 +40,19 @@ namespace AllPaths
                 throw;
             }
         }
+
+        public string GetPythonPath()
+        {
+            try
+            {
+                return _doc.Descendants("file").FirstOrDefault(e => e.Attribute("name")?.Value == "python.dll")
+                    .Attribute("path").Value;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+        }
     }
 }
