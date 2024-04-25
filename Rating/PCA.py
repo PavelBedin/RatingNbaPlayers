@@ -5,7 +5,6 @@ from sklearn.decomposition import PCA
 class PCA_builder():
     def __init__(self):
         self.data = None
-        self.min_variance_ratio = 0.55
 
     def data_processing(self, data_trad_stat, data_adv_stat):
         data_trad_stat = np.array(data_trad_stat)
@@ -16,6 +15,6 @@ class PCA_builder():
         length = len(data_trad_stat)
         self.data = self.data_processing(data_trad_stat, data_adv_stat)
         self.data.reshape((length, 2, -1)).mean(axis=1)
-        pca = PCA(self.min_variance_ratio)
+        pca = PCA(n_components=1)
         transformed_data = pca.fit_transform(self.data)
         return transformed_data

@@ -29,12 +29,16 @@ public class PCAWorker
         }
 
         PythonEngine.Shutdown();
+        foreach (var value in data)
+        {
+            Console.WriteLine(value);
+        }
     }
 
     private List<double[]> ToListDouble<T>(IEnumerable<T> stat)
     {
         var type = typeof(T);
-        var properties = type.GetProperties();
+        var properties = type.GetProperties().Skip(1);
         return stat.Select(item => properties.Select(p => Convert.ToDouble(p.GetValue(item))).ToArray()).ToList();
     }
 }
