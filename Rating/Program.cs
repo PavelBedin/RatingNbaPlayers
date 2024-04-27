@@ -7,6 +7,6 @@ class Program
     {
         var db = new Database();
         var pcaWorker = new PCAWorker();
-        pcaWorker.MakePCA(db.GetAllTraditionalStatistics(), db.GetAllAdvancedStatistics());
+        var data = pcaWorker.MakePCA(db.GetAllTraditionalStatistics(), db.GetAllAdvancedStatistics());
     }
 }

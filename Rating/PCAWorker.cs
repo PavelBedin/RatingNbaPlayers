@@ -7,7 +7,8 @@ namespace Rating;
 
 public class PCAWorker
 {
-    public void MakePCA(IEnumerable<TraditionalStatistics> tradStat, IEnumerable<AdvancedStatistics> advStat)
+    public List<double[]> MakePCA(IEnumerable<TraditionalStatistics> tradStat, IEnumerable<AdvancedStatistics> advStat,
+        bool isShowСhart = false)
     {
         var data = new List<double[]>();
         var path = new FindPath();
@@ -23,19 +24,20 @@ public class PCAWorker
             foreach (var item in result)
             {
                 string str = item.ToString();
-                var newStr = new string(str.Where(c => c != '[' && c != ']').ToArray());
+                var newStr = new string(str.Where(c => c != '(' && c != ')' && c != ',').ToArray());
                 data.Add(newStr.Replace(".", ",")
                     .Split().Where(x => !string.IsNullOrEmpty(x))
                     .Select(double.Parse)
                     .ToArray());
             }
+            if(isShowСhart)
+                pcaBuilder.show_new_component(data);
         }
 
         PythonEngine.Shutdown();
-        foreach (var value in data)
-        {
-            Console.WriteLine(String.Join(", ", value));
-        }
+
+
+        return data;
     }
 
     private List<double[]> ToListDouble<T>(IEnumerable<T> stat)
