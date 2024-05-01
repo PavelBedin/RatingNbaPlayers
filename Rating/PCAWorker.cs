@@ -20,7 +20,7 @@ public class PCAWorker
             sys.path.append(path.GetFullPath("PCA"));
             dynamic pcaModule = Py.Import("PCA");
             dynamic pcaBuilder = pcaModule.PCA_builder();
-            dynamic result = pcaBuilder.make_PCA(ToListDouble(tradStat), ToListDouble(advStat));
+            dynamic result = pcaBuilder.make_PCA(ToListDouble(tradStat), ToListDouble(advStat), 4);
             foreach (var item in result)
             {
                 string str = item.ToString();
@@ -31,7 +31,7 @@ public class PCAWorker
                     .ToArray());
             }
             if(isShowСhart)
-                pcaBuilder.show_new_component(data);
+                pcaBuilder.show_new_component(TakeCoordinate(data, 2), TakeCoordinate(data, 3));
         }
 
         PythonEngine.Shutdown();
@@ -49,5 +49,10 @@ public class PCAWorker
                 .Select(p => Convert.ToDouble(p.GetValue(item)))
                 .ToArray())
             .ToList();
+    }
+
+    private double[] TakeCoordinate(List<double[]> data, int i)
+    {
+        return data.Select(x => x[i]).ToArray();
     }
 }

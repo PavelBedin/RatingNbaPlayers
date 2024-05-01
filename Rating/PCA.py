@@ -20,19 +20,21 @@ class PCA_builder():
         mean_val = np.mean(data_nor)
         return (data_nor - mean_val) / std_data
 
-    def make_PCA(self, data_trad_stat: list, data_adv_stat: list):
+    def make_PCA(self, data_trad_stat: list, data_adv_stat: list, n_components: int):
         length = len(data_trad_stat)
         self.data = self.data_processing(data_trad_stat, data_adv_stat)
         self.data.reshape((length, 2, -1)).mean(axis=1)
-        pca = PCA(n_components=2)
+        pca = PCA(n_components=n_components)
         transformed_data = pca.fit_transform(self.data)
-        self.data_x = self.normalization([row[0] for row in transformed_data])
-        self.data_y = self.normalization([row[1] for row in transformed_data])
-        return list(zip(self.data_x, self.data_y))
+        result = []
+        for i in range(n_components):
+            if len(result) == 0:
+                result = self.normalization([row[0] for row in transformed_data])
+            else:
+                result = list(zip(result, self.normalization([row[i] for row in transformed_data])))
+        return result
 
-    def show_new_component(self, data: list):
-        x = [row[0] for row in data]
-        y = [row[1] for row in data]
+    def show_new_component(self, x: list, y: list):
         plt.scatter(x, y, color='blue', marker='o')
         count = 1
         for i, txt in enumerate(y):
