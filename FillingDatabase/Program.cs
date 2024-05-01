@@ -56,6 +56,8 @@ public static class Program
         for (var i = 0; i < n; i++)
         {
             stat[i] = ParseToDouble(node.SelectSingleNode($".//td[@data-stat='{lines[i]}']")?.InnerText);
+            if (Math.Abs(stat[i] - 100) < 0.0001 && stat[i - 1] == 0)
+                stat[i] = 0;
         }
 
         return stat;
