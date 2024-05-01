@@ -67,6 +67,8 @@ public static class Program
             return 0;
         if (str.StartsWith("."))
             str = str.Trim('.').Insert(2, ".");
+        if (str.Equals("1.000"))
+            str = "100";
         return double.Parse(str.Replace(".", ","));
     }
 
