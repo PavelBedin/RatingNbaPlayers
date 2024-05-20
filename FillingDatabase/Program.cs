@@ -12,20 +12,21 @@ internal delegate IStatisticsPlayer Create(int id, double[] stat);
 public static class Program
 {
     private static readonly Database Db = new();
+    private static readonly HashSet<string> AllPlayers = new();
 
     public static void Main()
     {
         var path = new FindPath();
         AddToDatabase(player => Db.AddTraditionalStatistics((TraditionalStatistics)player),
             HttpsRequests.GetTraditionalStatistics(),
-            TraditionalStatistics.Create, path.GetFullPath("FieldsTradStat"));
+            TraditionalStatistics.Create, path.GetFullPath("FieldsTradStat"), true);
         AddToDatabase(player => Db.AddAdvancedStatistics((AdvancedStatistics)player),
             HttpsRequests.GetAdvancedStatistics(),
             AdvancedStatistics.Create, path.GetFullPath("FieldsAdvStat"));
     }
 
     private static void AddToDatabase(AddStatistics statisticsDelegate, HtmlNodeCollection collection,
-        Create createDelegate, string path)
+        Create createDelegate, string path, bool isFirst = false)
     {
         try
         {
@@ -35,10 +36,28 @@ public static class Program
             foreach (var node in collection)
             {
                 var playerName = node.SelectSingleNode(".//td[@data-stat='player']")?.InnerText;
-                if (playerName == null || players.Contains(playerName))
+                if (playerName == null)
                     continue;
-                var id = Db.AddPlayer(FormingName(playerName));
+                playerName = FormingName(playerName);
+                if (players.Contains(playerName))
+                    continue;
                 players.Add(playerName);
+                int id;
+                if (isFirst)
+                {
+                    var innerText = node.SelectSingleNode(".//td[@data-stat='g']")?.InnerText;
+                    if (innerText != null && Int32.Parse(innerText) < 55)
+                        continue;
+                    AllPlayers.Add(playerName);
+                    id = Db.AddPlayer(playerName);
+                }
+                else
+                {
+                    if (!AllPlayers.Contains(playerName))
+                        continue;
+                    id = Db.GetPlayerByName(playerName).Id;
+                }
+
                 statisticsDelegate(createDelegate(id, FormingStat(node, path)));
             }
         }
