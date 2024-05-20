@@ -7,7 +7,7 @@ namespace Rating;
 
 public class PCAWorker
 {
-    public List<double[]> MakePCA(IEnumerable<TraditionalStatistics> tradStat, IEnumerable<AdvancedStatistics> advStat,
+    public List<double[]> MakePCA(double[][] offensive, double[][] defensive,
         bool isShowСhart = false)
     {
         var data = new List<double[]>();
@@ -20,7 +20,7 @@ public class PCAWorker
             sys.path.append(path.GetFullPath("PCA"));
             dynamic pcaModule = Py.Import("PCA");
             dynamic pcaBuilder = pcaModule.PCA_builder();
-            dynamic result = pcaBuilder.make_PCA(ToListDouble(tradStat), ToListDouble(advStat), 4);
+            dynamic result = pcaBuilder.make_PCA(offensive, defensive);
             foreach (var item in result)
             {
                 string str = item.ToString();
@@ -30,8 +30,9 @@ public class PCAWorker
                     .Select(double.Parse)
                     .ToArray());
             }
-            if(isShowСhart)
-                pcaBuilder.show_new_component(TakeCoordinate(data, 2), TakeCoordinate(data, 3));
+
+            if (isShowСhart)
+                pcaBuilder.show_new_component(TakeCoordinate(data, 0), TakeCoordinate(data, 1));
         }
 
         PythonEngine.Shutdown();
@@ -40,16 +41,6 @@ public class PCAWorker
         return data;
     }
 
-    private List<double[]> ToListDouble<T>(IEnumerable<T> stat)
-    {
-        var type = typeof(T);
-        var properties = type.GetProperties().Skip(1);
-        return stat
-            .Select(item => properties
-                .Select(p => Convert.ToDouble(p.GetValue(item)))
-                .ToArray())
-            .ToList();
-    }
 
     private double[] TakeCoordinate(List<double[]> data, int i)
     {

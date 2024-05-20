@@ -6,17 +6,19 @@ class Program
     public static void Main()
     {
         var db = new Database();
+
+        var tradStat = DataConverter.Convert(db.GetAllTraditionalStatistics());
+        var advStat = DataConverter.Convert(db.GetAllAdvancedStatistics());
+        var offensive = tradStat.Item1.Zip(advStat.Item1, (t, a) => t.Concat(a).ToArray()).ToArray();
+        var defensive = tradStat.Item2.Zip(advStat.Item2, (t, a) => t.Concat(a).ToArray()).ToArray();
+
         var pcaWorker = new PCAWorker();
-        var data = pcaWorker.MakePCA(db.GetAllTraditionalStatistics(), db.GetAllAdvancedStatistics(), true);
-        var worstX = -data.Select(x => x[0]).Max();
-        var bestX = -data.Select(x => x[0]).Min();
-        var worstY = data.Select(x => x[1]).Min();
-        var bestY = data.Select(x => x[1]).Max();
+        var data = pcaWorker.MakePCA(offensive, defensive, true);
         var dictionaryRating = new Dictionary<int, int>();
         for (var i = 0; i < data.Count; i++)
         {
-            dictionaryRating.Add(i + 1,
-                Rating(data[i], worstX, bestX + Math.Abs(worstX), worstY, bestY + Math.Abs(worstY)));
+            // dictionaryRating.Add(i + 1,
+            //     Rating(data[i], worstX, bestX + Math.Abs(worstX), worstY, bestY + Math.Abs(worstY)));
         }
 
         dictionaryRating = dictionaryRating
