@@ -66,5 +66,34 @@
         {
             return new AdvancedStatistics(id, stat);
         }
+
+        public double[] GetOffensiveStat()
+        {
+            return new[]
+            {
+                PER,
+                OREBP,
+                ASTP,
+                USGP,
+                OWS,
+                WS,
+                WS48,
+                OBPM,
+                BPM,
+                VORP
+            };
+        }
+
+        public double[] GetDefensiveStat()
+        {
+            return new[]
+            {
+                DREBP,
+                REBP,
+                STLP,
+                BLKP,
+                DWS
+            };
+        }
     }
 }

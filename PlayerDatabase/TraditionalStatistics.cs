@@ -62,6 +62,37 @@ public record TraditionalStatistics(
             .ToList();
     }
 
+    public double[] GetOffensiveStat()
+    {
+        return new[]
+        {
+            MinutesPlayed,
+            PPG,
+            FGM,
+            FGA,
+            TPM,
+            TPA,
+            FTM,
+            FTA,
+            OREB,
+            AST,
+            TOV 
+        };
+    }
+
+
+    public double[] GetDefensiveStat()
+    {
+        return new[]
+        {
+            DRED,
+            REB,
+            STL,
+            BLK
+        };
+    }
+
+
     public static IStatisticsPlayer Create(int id, double[] stat)
     {
         return new TraditionalStatistics(id, stat);
