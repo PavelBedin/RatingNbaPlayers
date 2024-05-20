@@ -1,4 +1,4 @@
-﻿namespace DataBase.Exceptions;
+﻿namespace PlayerDatabase.Exceptions;
 
 public class NotEntryException : Exception
 {

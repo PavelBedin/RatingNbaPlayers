@@ -1,8 +1,8 @@
 ﻿using System.Reflection;
 using System.Text;
 using AllPaths;
-using DataBase.Exceptions;
 using Microsoft.Data.Sqlite;
+using PlayerDatabase.Exceptions;
 
 namespace PlayerDatabase;
 
