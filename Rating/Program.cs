@@ -13,28 +13,47 @@ class Program
         var defensive = tradStat.Item2.Zip(advStat.Item2, (t, a) => t.Concat(a).ToArray()).ToArray();
 
         var pcaWorker = new PCAWorker();
-        var data = pcaWorker.MakePCA(offensive, defensive, true);
-        var dictionaryRating = new Dictionary<int, int>();
-        for (var i = 0; i < data.Count; i++)
+        var data = pcaWorker.MakePCA(offensive, defensive);
+        var rating = MakeRating(data);
+        var players = db.GetAllPlayers();
+        var zipped = rating.Zip(players, (rating, player) => new { Rating = rating, Player = player }).ToArray();
+        foreach (var value in zipped)
         {
-            // dictionaryRating.Add(i + 1,
-            //     Rating(data[i], worstX, bestX + Math.Abs(worstX), worstY, bestY + Math.Abs(worstY)));
-        }
-
-        dictionaryRating = dictionaryRating
-            .OrderByDescending(x => x.Value)
-            .ToDictionary(x => x.Key, x => x.Value);
-
-        foreach (var value in dictionaryRating)
-        {
-            Console.WriteLine($"{db.GetPlayerById(value.Key).Name} - {value.Value}");
+            db.AddPlayerRating(new PlayerRating(value.Player.Name, value.Player.Id, value.Rating));
         }
     }
 
-    private static int Rating(double[] data, double worstX, double bestX, double worstY, double bestY)
+
+    private static List<int> MakeRating(List<double[]> data)
     {
-        return (int)Math.Round(
-            Math.Abs(-data[0] + Math.Abs(worstX)) / bestX * 60 + (data[1] + Math.Abs(worstY)) / bestY * 40
-            , MidpointRounding.ToEven);
+        var variance = new List<double>();
+        var scope = new List<double>();
+        var listMin = new List<double>();
+
+        for (var i = 0; i < data[0].Length; i++)
+        {
+            var block = data.Select(x => x[i]).ToArray();
+            var avg = block.Average();
+            variance.Add(block.Select(x => Math.Pow(x - avg, 2)).Sum() / block.Length);
+            listMin.Add(block.Min());
+            scope.Add(block.Max() - listMin.Last());
+        }
+
+        var varianceSum = variance.Sum();
+        var factor = variance.Select(value => value / varianceSum).ToList();
+        var rating = new List<int>();
+        foreach (var value in data)
+        {
+            var result = 0.0;
+            for (var i = 0; i < data[0].Length; i++)
+            {
+                result += factor[i] * (value[i] - listMin[i]) / scope[i] * 100;
+            }
+
+            rating.Add((int)Math.Round(result));
+        }
+
+
+        return rating;
     }
 }
