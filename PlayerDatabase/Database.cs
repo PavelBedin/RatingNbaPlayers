@@ -201,6 +201,13 @@ public class Database : IDisposable
         }
     }
 
+    public IEnumerable<ComparisonOfRatings?> GetAllComparisonOfRating()
+    {
+        var command =
+            "SELECT Name, R.Rating AS RatingBuilt, R2K.Rating AS Rating2K FROM Players JOIN Rating R on Players.Id = R.PlayerId JOIN Rating2K R2K on Players.Id = R2K.PlayerId";
+        return GetAll<ComparisonOfRatings>(command);
+    }
+
     private IEnumerable<T?> GetAll<T>(string select)
     {
         var list = new List<T?>();
